@@ -1,0 +1,29 @@
+Mars Project
+$Id: README 738 2009-11-13 16:08:10Z wenbinor $
+
+1, Application Overview
+-----------------------
+Matrix Multiplication (MM): Matrix multiplication is widely applicable to analyze the relationship of two documents. Given two matrices M and N, each Map computes multiplication for a row from M and a column from N. It outputs the pair of the row ID and the column ID as the key and the corresponding result as the value. No Reduce stage is required.
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: user defined include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./MatrixMul <rowNum> <colNum> 

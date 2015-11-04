@@ -1,0 +1,31 @@
+Mars Project
+$Id: README 720 2009-11-10 10:13:52Z wenbinor $
+
+1, Application Overview
+-----------------------
+String Match (SM): String match is used as exact matching for a string in an input file. Each Map searches one line in the input file to check whether the target string is in the line. For each string it finds, it emits an intermediate pair of the string as the key and the position as the value. No Reduce stage is required.
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./StringMatch <dataFile> <keyword> 
+
+Note: all test textual files should be in unix format ('\n').

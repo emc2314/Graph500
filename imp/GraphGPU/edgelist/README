@@ -1,0 +1,5 @@
+GraphGPU Project
+
+-sample: tiny sample edge list
+-wiki-Vote.txt: Raw Wikipedia adminship network obtained from [SNAP (Stanford Network Analysis Project)](http://snap.stanford.edu/>)
+-s14.edge: kronecker edge list which consists of 2^14 * 16 edges obtained from gengraph

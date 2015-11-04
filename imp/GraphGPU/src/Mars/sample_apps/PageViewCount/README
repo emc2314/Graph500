@@ -1,0 +1,30 @@
+Mars Project
+$Id: README 738 2009-11-13 16:08:10Z wenbinor $
+
+1, Application Overview
+-----------------------
+Page View Count (PVC): It obtains the number of distinct page views from the web logs. Each entry in the web log is represented as <URL, IP, Cookie>, where URL is the URL of the accessed page; IP is the IP address that accesses the page; Cookie is the cookie information generated when the page is accessed. This application has two executions of MapReduce. The first one removes the duplicate entries in the web logs. The second one counts the number of page views. In the first MapReduce, each Map takes the pair of an entry as the key and the size of the entry as value. The sort is to eliminate the redundancy in the web log. Specifically, if more than one log entries have the same information, we keep only one of them. The first MapReduce outputs the result pair of the log entry as key and the size of the line as value. The second MapReduce processes the key/value pairs generated from the first MapReduce. The Map outputs the URL as the key and the IP as the value. The Reduce computes the number of IPs for each URL.
+
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: the global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./PageViewCount <logFile> 

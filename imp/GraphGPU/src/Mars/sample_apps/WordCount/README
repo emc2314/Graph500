@@ -1,0 +1,31 @@
+Mars Project
+$Id: README 721 2009-11-10 10:23:55Z wenbinor $
+
+1, Application Overview
+-----------------------
+Word Count (WC): It counts the number of occurrences for each word in a file. Each Map task processes a portion of the input file and emits intermediate data pairs, each of which consists of a word as the key and a value of 1 for the occurrence. Group is required, and no reduce is needed, because the Mars runtime provides the size of each group, after the Group stage.  
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./WordCount <dataFile> 
+
+Note: the test textual file should be in unix format ('\n').

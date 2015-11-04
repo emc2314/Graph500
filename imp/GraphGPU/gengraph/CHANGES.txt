@@ -1,0 +1,9 @@
+gengraph change log
+
+2013-06-20
+add outputting a kronecker edge list to a text file
+modified following files
+
+graph500-2.1.4/graph500.c
+graph500-2.1.4/options.c
+graph500-2.1.4/options.h

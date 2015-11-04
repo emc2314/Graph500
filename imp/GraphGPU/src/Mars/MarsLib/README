@@ -1,0 +1,21 @@
+Mars Project
+$Id: README 736 2009-11-13 15:30:16Z wenbinor $
+
+1, functions provided by runtime 
+--------------------------------
+All files containing such functions are in "call" directory.
+
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort && grouping
+MarsScan.cu: a GPU version scan, from NVIDIA CUDA SDK Sample
+MarsInc.h: included by user defined files
+MarsUtils.cpp: some utility functions
+
+2, user defined functions
+---------------------
+All files containing such functions are in "define" directory.
+
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare

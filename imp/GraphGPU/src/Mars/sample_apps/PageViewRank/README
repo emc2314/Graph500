@@ -1,0 +1,28 @@
+Mars Project
+$Id: README 738 2009-11-13 16:08:10Z wenbinor $
+
+1, Application Overview
+-----------------------
+Page View Rank (PVR): With the output of the Page View Count, the Map in Page View Rank takes the pair of the page access count as the key and the URL as the value, and obtains the top ten URLs that are most frequently accessed. No Reduce stage is required.
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: the global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./PageViewRank <logFile> 

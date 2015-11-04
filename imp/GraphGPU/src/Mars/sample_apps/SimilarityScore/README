@@ -1,0 +1,29 @@
+Mars Project
+$Id: README 739 2009-11-13 16:10:32Z wenbinor $
+
+1, Application Overview
+-----------------------
+Similarity Score (SS): It is used in web document clustering. The characteristics of a document are represented as a feature vector. Given two document features, a and b , the similarity score between these two documents is defined to be a.b/(|a|.|b|). This appli ation computes the pair-wise similarity score for a set of documents. Each Map computes the similarity score for two documents. It outputs the intermediate pair of the score as the key and the pair of the two document IDs as the value. No Reduce stage is required.
+
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./SimilarityScore <rowNum> <colNum> 

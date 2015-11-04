@@ -1,0 +1,34 @@
+Mars Project
+$Id: README 738 2009-11-13 16:08:10Z wenbinor $
+
+1, Application Overview
+-----------------------
+Kmeans (KM): It implements the iterative K-means algorithm [21] that groups a set of input data points into clusters. The MapReduce procedure is called iteratively until the result converges. In each iteration, each Map takes the pointer that points to centers of existing clusters as the key and a point as the value. It calculates the distance between each point and each cluster center, then assigns the point to the closest cluster. For each point, it emits the cluster id as the key and the point as the value. The Reduce task gathers all points with the same cluster-id, and calculates the cluster center. It emits the cluster id as the key and the cluster center as the value. Each point is represented as a 3-dimensional real number vector. The number of clusters is 24.
+
+ 
+2, Provided Files
+-----------------
+MarsUtils.cu: some useful functions
+MarsStrLib.cu: an efficient string library on GPU
+MarsLib.cu: the GPU MapReduce engine
+MarsSort.cu: a GPU version bitonic sort
+MarsScan.cu: a GPU version scan
+MarsInc.h: included by user defined files
+
+global.h: global include file
+main.cu: main function's file
+map.cu: user defined map
+reduce.cu: user defined reduce
+compare.cu: user defined compare
+
+3. Running the Application
+--------------------------
+
+Run "make.sh" to build the release version of this application running on the GPU.
+Run "make.sh emu=1" to build the emu version of this application running on the CPU.
+
+./Kmeans numPt dim K 
+
+numPt: number of points
+dim: dimension of points
+K: number of clusters

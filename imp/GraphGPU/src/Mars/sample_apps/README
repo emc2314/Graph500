@@ -1,0 +1,53 @@
+Mars Project
+$Id: README 721 2009-11-10 10:23:55Z wenbinor $
+
+1, Sample Applications Overview
+-------------------------------
+1) String Match -- sm
+
+String Match (SM): String match is used as exact matching for a string in an input file. Each Map searches one line in the input file to check whether the target string is in the line. For each string it finds, it emits an intermediate pair of the string as the key and the position as the value. No Reduce stage is required.
+ 
+2) Similarity Score -- ss
+
+Similarity Score (SS): It is used in web document clustering. The characteristics of a document are represented as a feature vector. Given two document features, a and b , the similarity score between these two documents is defined to be a.b/(|a|.|b|). This application computes the pair-wise similarity score for a set of documents. Each Map computes the similarity score for two documents. It outputs the intermediate pair of the score as the key and the pair of the two document IDs as the value. No Reduce stage is required.
+
+3) Inverted Index -- ii
+
+Inverted Index (II): It scans a set of HTML files and extracts the positions for all links. Each Map processes one line of HTML files. For each link it finds, it outputs an intermediate pair with the link as the key and the position as the value. No Reduce stage is required.
+
+4) PageViewCount -- pvc
+
+Page View Count (PVC): It obtains the number of distinct page views from the web logs. Each entry in the web log is represented as <URL, IP, Cookie>, where URL is the URL of the accessed page; IP is the IP address that accesses the page; Cookie is the cookie information generated when the page is accessed. This application has two executions of MapReduce. The first one removes the duplicate entries in the web logs. The second one counts the number of page views. In the first MapReduce, each Map takes the pair of an entry as the key and the size of the entry as value. The sort is to eliminate the redundancy in the web log. Specifically, if more than one log entries have the same information, we keep only one of them. The first MapReduce outputs the result pair of the log entry as key and the size of the line as value. The second MapReduce processes the key/value pairs generated from the first MapReduce. The Map outputs the URL as the key and the IP as the value. The Reduce computes the number of IPs for each URL.
+
+5) PageViewRank -- pvr
+
+Page View Rank (PVR): With the output of the Page View Count, the Map in Page View Rank takes the pair of the page access count as the key and the URL as the value, and obtains the top ten URLs that are most frequently accessed. No Reduce stage is required.
+
+6) MatrixMul -- mm
+
+Matrix Multiplication (MM): Matrix multiplication is widely applicable to analyze the relationship of two documents. Given two matrices M and N, each Map computes multiplication for a row from M and a column from N. It outputs the pair of the row ID and the column ID as the key and the corresponding result as the value. No Reduce stage is required.
+
+7) Kmeans -- km
+
+Kmeans (KM): It implements the iterative K-means algorithm [21] that groups a set of input data points into clusters. The MapReduce procedure is called iteratively until the result converges. In each iteration, each Map takes the pointer that points to centers of existing clusters as the key and a point as the value. It calculates the distance between each point and each cluster center, then assigns the point to the closest cluster. For each point, it emits the cluster id as the key and the point as the value. The Reduce task gathers all points with the same cluster-id, and calculates the cluster center. It emits the cluster id as the key and the cluster center as the value. Each point is represented as a 3-dimensional real number vector. The number of clusters is 24.
+
+
+8) Word Count -- wc
+
+WordCount (WC): It counts the number of occurrences for each word in a file. Each Map task processes a portion of the input file and emits intermediate data pairs, each of which consists of a word as the key and a value of 1 for the occurrence. Group is required, and no reduce is needed, because the Mars runtime provides the size of each group, after the Group stage.  
+
+2, Build And Run Sample Applications
+------------------------------------
+
+1, copy all these eight applications with run.sh and BIN_TMPL to your Nvidia CUDA SDK's projects directory.
+2, edit run.sh, setup the correct Nvidia CUDA SDK's path -- setup the variable $SDK_PATH.
+3, run this "run.sh" shell script to build and run these eight applications. 
+
+the run.sh shell script's usage:
+
+run.sh make all -- Build the eight applications in one time.
+run.sh make sm|ss|ii|pvc|pvr|mm|km|wc -- Build the eight applications separately.
+run.sh run all --  Run the eight applications in one time.
+run.sh run sm|ss|ii|pvc|pvr|mm|km|wc --  Run the eight applications separately.
+run.sh clean all -- clean all eight applications' object files
+run.sh clean sm|ss|ii|pvc|pvr|mm|km|wc -- clean the eight applications' object files separatelly.
