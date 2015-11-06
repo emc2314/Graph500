@@ -38,7 +38,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-static int compare_doubles(const void *a, const void *b){
+static int compare_doubles(const void *a, const void *b)
+{
 	double aa = *(const double *)a;
 	double bb = *(const double *)b;
 
@@ -46,8 +47,10 @@ static int compare_doubles(const void *a, const void *b){
 }
 
 enum { s_minimum, s_firstquartile, s_median, s_thirdquartile, s_maximum, s_mean,
-	    s_std, s_LAST };
-static void get_statistics(const double x[], int n, double r[s_LAST]){
+	s_std, s_LAST
+};
+static void get_statistics(const double x[], int n, double r[s_LAST])
+{
 	double temp;
 	int i;
 
@@ -55,7 +58,7 @@ static void get_statistics(const double x[], int n, double r[s_LAST]){
 	 * Compute mean. 
 	 */
 	temp = 0;
-	for(i = 0; i < n; ++i)
+	for (i = 0; i < n; ++i)
 		temp += x[i];
 	temp /= n;
 	r[s_mean] = temp;
@@ -63,7 +66,7 @@ static void get_statistics(const double x[], int n, double r[s_LAST]){
 	 * Compute std. dev. 
 	 */
 	temp = 0;
-	for(i = 0; i < n; ++i)
+	for (i = 0; i < n; ++i)
 		temp += (x[i] - r[s_mean]) * (x[i] - r[s_mean]);
 	temp /= n - 1;
 	r[s_std] = sqrt(temp);
@@ -88,7 +91,8 @@ static void get_statistics(const double x[], int n, double r[s_LAST]){
 	free(xx);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 	MPI_Init(&argc, &argv);
 
 	setup_globals();
@@ -99,12 +103,12 @@ int main(int argc, char **argv){
 	int SCALE = 16;
 	int edgefactor = 16;	/* nedges / nvertices, i.e., 2*avg. degree */
 
-	if(argc >= 2)
+	if (argc >= 2)
 		SCALE = atoi(argv[1]);
-	if(argc >= 3)
+	if (argc >= 3)
 		edgefactor = atoi(argv[2]);
-	if(argc <= 1 || argc >= 4 || SCALE == 0 || edgefactor == 0){
-		if(rank == 0){
+	if (argc <= 1 || argc >= 4 || SCALE == 0 || edgefactor == 0) {
+		if (rank == 0) {
 			fprintf(stderr,
 				"Usage: %s SCALE edgefactor\n  SCALE = log_2(# vertices) [integer, required]\n  edgefactor = (# edges) / (# vertices) = .5 * (average vertex degree) [integer, defaults to 16]\n(Random number seed and Kronecker initiator are in main.c)\n",
 				argv[0]);
@@ -114,7 +118,6 @@ int main(int argc, char **argv){
 	uint64_t seed1 = 2, seed2 = 3;
 
 	const char *filename = getenv("TMPFILE");
-	const int reuse_file = getenv("REUSEFILE") ? 1 : 0;
 
 	/*
 	 * If filename is NULL, store data in memory 
@@ -122,49 +125,19 @@ int main(int argc, char **argv){
 
 	tuple_graph tg;
 
-	tg.nglobaledges = (int64_t)(edgefactor) << SCALE;
-	int64_t nglobalverts = (int64_t)(1) << SCALE;
+	tg.nglobaledges = (int64_t) (edgefactor) << SCALE;
+	int64_t nglobalverts = (int64_t) (1) << SCALE;
 
 	tg.data_in_file = (filename != NULL);
-	tg.write_file = 1;
 
-	if(tg.data_in_file){
-		int is_opened = 0;
-		int mode = MPI_MODE_RDWR | MPI_MODE_EXCL | MPI_MODE_UNIQUE_OPEN;
-
-		if(!reuse_file){
-			mode |= MPI_MODE_CREATE | MPI_MODE_DELETE_ON_CLOSE;
-		} else {
-			MPI_File_set_errhandler(MPI_FILE_NULL,
-						MPI_ERRORS_RETURN);
-			if(MPI_File_open
-			   (MPI_COMM_WORLD, (char *)filename, mode,
-			    MPI_INFO_NULL, &tg.edgefile)){
-				if(0 == rank && getenv("VERBOSE"))
-					fprintf(stderr,
-						"%d: failed to open %s, creating\n",
-						rank, filename);
-				mode |= MPI_MODE_RDWR | MPI_MODE_CREATE;
-			} else {
-				MPI_Offset size;
-
-				MPI_File_get_size(tg.edgefile, &size);
-				if(size ==
-				   tg.nglobaledges * sizeof(packed_edge)){
-					is_opened = 1;
-					tg.write_file = 0;
-				} else	/* Size doesn't match, assume different parameters. */
-					MPI_File_close(&tg.edgefile);
-			}
-		}
+	if (tg.data_in_file) {
 		MPI_File_set_errhandler(MPI_FILE_NULL, MPI_ERRORS_ARE_FATAL);
-		if(!is_opened){
-			MPI_File_open(MPI_COMM_WORLD, (char *)filename, mode,
-				      MPI_INFO_NULL, &tg.edgefile);
-			MPI_File_set_size(tg.edgefile,
-					  tg.nglobaledges *
-					  sizeof(packed_edge));
-		}
+		MPI_File_open(MPI_COMM_WORLD, (char *)filename,
+			      MPI_MODE_RDWR | MPI_MODE_CREATE | MPI_MODE_EXCL |
+			      MPI_MODE_DELETE_ON_CLOSE | MPI_MODE_UNIQUE_OPEN,
+			      MPI_INFO_NULL, &tg.edgefile);
+		MPI_File_set_size(tg.edgefile,
+				  tg.nglobaledges * sizeof(packed_edge));
 		MPI_File_set_view(tg.edgefile, 0, packed_edge_mpi_type,
 				  packed_edge_mpi_type, "native",
 				  MPI_INFO_NULL);
@@ -204,10 +177,11 @@ int main(int argc, char **argv){
 		 */
 		MPI_Offset nchunks_in_file =
 		    (tg.nglobaledges + FILE_CHUNKSIZE - 1) / FILE_CHUNKSIZE;
-		int64_t bitmap_size_in_bytes =
-		    int64_min(BITMAPSIZE,
-			      (nglobalverts + CHAR_BIT - 1) / CHAR_BIT);
-		if(bitmap_size_in_bytes * size * CHAR_BIT < nglobalverts){
+		int64_t bitmap_size_in_bytes = int64_min(BITMAPSIZE,
+							 (nglobalverts +
+							  CHAR_BIT -
+							  1) / CHAR_BIT);
+		if (bitmap_size_in_bytes * size * CHAR_BIT < nglobalverts) {
 			bitmap_size_in_bytes =
 			    (nglobalverts + size * CHAR_BIT -
 			     1) / (size * CHAR_BIT);
@@ -228,7 +202,7 @@ int main(int argc, char **argv){
 		}
 		int in_generating_rectangle = 0;
 
-		if(cart_comm != MPI_COMM_NULL){
+		if (cart_comm != MPI_COMM_NULL) {
 			in_generating_rectangle = 1;
 			{
 				int dims[2], periods[2], coords[2];
@@ -242,8 +216,7 @@ int main(int argc, char **argv){
 
 			MPI_Comm_split(cart_comm, my_col, my_row, &this_col);
 			MPI_Comm_free(&cart_comm);
-			has_edge =
-			    (unsigned char *)
+			has_edge = (unsigned char *)
 			    xMPI_Alloc_mem(bitmap_size_in_bytes);
 			memset(has_edge, 0, bitmap_size_in_bytes);
 			/*
@@ -258,7 +231,7 @@ int main(int argc, char **argv){
 			/*
 			 * fprintf(stderr, "%d: nchunks_in_file = %" PRId64 ", block_limit = %" PRId64 " in grid of %d rows, %d cols\n", rank, (int64_t)nchunks_in_file, (int64_t)block_limit, nrows, ranks_per_row); 
 			 */
-			if(tg.data_in_file){
+			if (tg.data_in_file) {
 				tg.edgememory_size = 0;
 				tg.edgememory = NULL;
 			} else {
@@ -292,7 +265,8 @@ int main(int argc, char **argv){
 			}
 			MPI_Offset block_idx;
 
-			for(block_idx = 0; block_idx < block_limit; ++block_idx){
+			for (block_idx = 0; block_idx < block_limit;
+			     ++block_idx) {
 				/*
 				 * fprintf(stderr, "%d: On block %d of %d\n", rank, (int)block_idx, (int)block_limit); 
 				 */
@@ -306,58 +280,47 @@ int main(int argc, char **argv){
 				packed_edge *actual_buf = (!tg.data_in_file &&
 							   block_idx %
 							   ranks_per_row ==
-							   my_col) ? tg.
-				    edgememory +
+							   my_col) ?
+				    tg.edgememory +
 				    FILE_CHUNKSIZE * (block_idx /
 						      ranks_per_row) : buf;
 				/*
 				 * fprintf(stderr, "%d: My range is [%" PRId64 ", %" PRId64 ") %swriting into index %" PRId64 "\n", rank, (int64_t)start_edge_index, (int64_t)(start_edge_index + edge_count), (my_col == (block_idx % ranks_per_row)) ? "" : "not ", (int64_t)(FILE_CHUNKSIZE * (block_idx / ranks_per_row))); 
 				 */
-				if(!tg.data_in_file &&
-				   block_idx % ranks_per_row == my_col){
+				if (!tg.data_in_file &&
+				    block_idx % ranks_per_row == my_col) {
 					assert(FILE_CHUNKSIZE *
 					       (block_idx / ranks_per_row) +
 					       edge_count <=
 					       tg.edgememory_size);
 				}
-				if(tg.write_file){
-					generate_kronecker_range(seed, SCALE,
-								 start_edge_index,
-								 start_edge_index
-								 + edge_count,
-								 actual_buf);
-					if(tg.data_in_file && my_col == (block_idx % ranks_per_row)){	/* Try to spread writes among ranks */
-						MPI_File_write_at(tg.edgefile,
-								  start_edge_index,
-								  actual_buf,
-								  edge_count,
-								  packed_edge_mpi_type,
-								  MPI_STATUS_IGNORE);
-					}
-				} else {
-					/*
-					 * All read rather than syncing up for a row broadcast. 
-					 */
-					MPI_File_read_at(tg.edgefile,
+				generate_kronecker_range(seed, SCALE,
 							 start_edge_index,
-							 actual_buf, edge_count,
-							 packed_edge_mpi_type,
-							 MPI_STATUS_IGNORE);
+							 start_edge_index +
+							 edge_count,
+							 actual_buf);
+				if (tg.data_in_file && my_col == (block_idx % ranks_per_row)) {	/* Try to spread writes among ranks */
+					MPI_File_write_at(tg.edgefile,
+							  start_edge_index,
+							  actual_buf,
+							  edge_count,
+							  packed_edge_mpi_type,
+							  MPI_STATUS_IGNORE);
 				}
 				ptrdiff_t i;
 
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-				for(i = 0; i < edge_count; ++i){
+				for (i = 0; i < edge_count; ++i) {
 					int64_t src =
 					    get_v0_from_edge(&actual_buf[i]);
 					int64_t tgt =
 					    get_v1_from_edge(&actual_buf[i]);
-					if(src == tgt)
+					if (src == tgt)
 						continue;
-					if(src / bitmap_size_in_bytes /
-					   CHAR_BIT == my_col){
+					if (src / bitmap_size_in_bytes /
+					    CHAR_BIT == my_col) {
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -365,8 +328,8 @@ int main(int argc, char **argv){
 							 bitmap_size_in_bytes]
 						    |= (1 << (src % CHAR_BIT));
 					}
-					if(tgt / bitmap_size_in_bytes /
-					   CHAR_BIT == my_col){
+					if (tgt / bitmap_size_in_bytes /
+					    CHAR_BIT == my_col) {
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -399,38 +362,38 @@ int main(int argc, char **argv){
 			uint64_t counter = 0;
 			int bfs_root_idx;
 
-			for(bfs_root_idx = 0; bfs_root_idx < num_bfs_roots;
-			    ++bfs_root_idx){
+			for (bfs_root_idx = 0; bfs_root_idx < num_bfs_roots;
+			     ++bfs_root_idx) {
 				int64_t root;
 
-				while(1){
+				while (1) {
 					double d[2];
 
 					make_random_numbers(2, seed1, seed2,
 							    counter, d);
 					root =
-					    (int64_t)((d[0] +
+					    (int64_t) ((d[0] +
 							d[1]) * nglobalverts) %
 					    nglobalverts;
 					counter += 2;
-					if(counter > 2 * nglobalverts)
+					if (counter > 2 * nglobalverts)
 						break;
 					int is_duplicate = 0;
 					int i;
 
-					for(i = 0; i < bfs_root_idx; ++i){
-						if(root == bfs_roots[i]){
+					for (i = 0; i < bfs_root_idx; ++i) {
+						if (root == bfs_roots[i]) {
 							is_duplicate = 1;
 							break;
 						}
 					}
-					if(is_duplicate)
+					if (is_duplicate)
 						continue;	/* Everyone takes the same path here */
 					int root_ok = 0;
 
-					if(in_generating_rectangle &&
-					   (root / CHAR_BIT /
-					    bitmap_size_in_bytes) == my_col){
+					if (in_generating_rectangle &&
+					    (root / CHAR_BIT /
+					     bitmap_size_in_bytes) == my_col) {
 						root_ok =
 						    (has_edge
 						     [(root / CHAR_BIT) %
@@ -444,7 +407,7 @@ int main(int argc, char **argv){
 					MPI_Allreduce(MPI_IN_PLACE, &root_ok, 1,
 						      MPI_INT, MPI_LOR,
 						      MPI_COMM_WORLD);
-					if(root_ok)
+					if (root_ok)
 						break;
 				}
 				bfs_roots[bfs_root_idx] = root;
@@ -458,14 +421,15 @@ int main(int argc, char **argv){
 				int64_t i;
 
 				max_used_vertex = 0;
-				if(in_generating_rectangle){
-					for(i = bitmap_size_in_bytes * CHAR_BIT;
-					    i > 0; --i){
-						if(i > nglobalverts)
+				if (in_generating_rectangle) {
+					for (i =
+					     bitmap_size_in_bytes * CHAR_BIT;
+					     i > 0; --i) {
+						if (i > nglobalverts)
 							continue;
-						if(has_edge[(i - 1) / CHAR_BIT]
-						   & (1 <<
-						      ((i - 1) % CHAR_BIT))){
+						if (has_edge[(i - 1) / CHAR_BIT]
+						    & (1 <<
+						       ((i - 1) % CHAR_BIT))) {
 							max_used_vertex =
 							    (i - 1) +
 							    my_col * CHAR_BIT *
@@ -479,17 +443,17 @@ int main(int argc, char **argv){
 					      MPI_COMM_WORLD);
 			}
 		}
-		if(in_generating_rectangle){
+		if (in_generating_rectangle) {
 			MPI_Free_mem(has_edge);
 		}
-		if(tg.data_in_file && tg.write_file){
+		if (tg.data_in_file) {
 			MPI_File_sync(tg.edgefile);
 		}
 	}
 	double make_graph_stop = MPI_Wtime();
 	double make_graph_time = make_graph_stop - make_graph_start;
 
-	if(rank == 0){		/* Not an official part of the results */
+	if (rank == 0) {	/* Not an official part of the results */
 		fprintf(stderr, "graph_generation:               %f s\n",
 			make_graph_time);
 	}
@@ -503,7 +467,7 @@ int main(int argc, char **argv){
 	double data_struct_stop = MPI_Wtime();
 	double data_struct_time = data_struct_stop - data_struct_start;
 
-	if(rank == 0){		/* Not an official part of the results */
+	if (rank == 0) {	/* Not an official part of the results */
 		fprintf(stderr, "construction_time:              %f s\n",
 			data_struct_time);
 	}
@@ -527,10 +491,10 @@ int main(int argc, char **argv){
 
 	int bfs_root_idx;
 
-	for(bfs_root_idx = 0; bfs_root_idx < num_bfs_roots; ++bfs_root_idx){
+	for (bfs_root_idx = 0; bfs_root_idx < num_bfs_roots; ++bfs_root_idx) {
 		int64_t root = bfs_roots[bfs_root_idx];
 
-		if(rank == 0)
+		if (rank == 0)
 			fprintf(stderr, "Running BFS %d\n", bfs_root_idx);
 
 		/*
@@ -547,49 +511,38 @@ int main(int argc, char **argv){
 		double bfs_stop = MPI_Wtime();
 
 		bfs_times[bfs_root_idx] = bfs_stop - bfs_start;
-		if(rank == 0)
+		if (rank == 0)
 			fprintf(stderr, "Time for BFS %d is %f\n", bfs_root_idx,
 				bfs_times[bfs_root_idx]);
 
 		/*
 		 * Validate result. 
 		 */
-		if(!getenv("SKIP_VALIDATION")){
-			if(rank == 0)
-				fprintf(stderr, "Validating BFS %d\n",
-					bfs_root_idx);
+		if (rank == 0)
+			fprintf(stderr, "Validating BFS %d\n", bfs_root_idx);
 
-			double validate_start = MPI_Wtime();
-			int64_t edge_visit_count;
-			int validation_passed_one =
-			    validate_bfs_result(&tg, max_used_vertex + 1,
-						nlocalverts, root, pred,
-						&edge_visit_count);
-			double validate_stop = MPI_Wtime();
+		double validate_start = MPI_Wtime();
+		int64_t edge_visit_count;
+		int validation_passed_one =
+		    validate_bfs_result(&tg, max_used_vertex + 1, nlocalverts,
+					root, pred, &edge_visit_count);
+		double validate_stop = MPI_Wtime();
 
-			validate_times[bfs_root_idx] =
-			    validate_stop - validate_start;
-			if(rank == 0)
+		validate_times[bfs_root_idx] = validate_stop - validate_start;
+		if (rank == 0)
+			fprintf(stderr, "Validate time for BFS %d is %f\n",
+				bfs_root_idx, validate_times[bfs_root_idx]);
+		edge_counts[bfs_root_idx] = (double)edge_visit_count;
+		if (rank == 0)
+			fprintf(stderr, "TEPS for BFS %d is %g\n", bfs_root_idx,
+				edge_visit_count / bfs_times[bfs_root_idx]);
+
+		if (!validation_passed_one) {
+			validation_passed = 0;
+			if (rank == 0)
 				fprintf(stderr,
-					"Validate time for BFS %d is %f\n",
-					bfs_root_idx,
-					validate_times[bfs_root_idx]);
-			edge_counts[bfs_root_idx] = (double)edge_visit_count;
-			if(rank == 0)
-				fprintf(stderr, "TEPS for BFS %d is %g\n",
-					bfs_root_idx,
-					edge_visit_count /
-					bfs_times[bfs_root_idx]);
-
-			if(!validation_passed_one){
-				validation_passed = 0;
-				if(rank == 0)
-					fprintf(stderr,
-						"Validation failed for this BFS root; skipping rest.\n");
-				break;
-			}
-		} else {
-			validate_times[bfs_root_idx] = -1;
+					"Validation failed for this BFS root; skipping rest.\n");
+			break;
 		}
 	}
 
@@ -597,7 +550,7 @@ int main(int argc, char **argv){
 	free(bfs_roots);
 	free_graph_data_structure();
 
-	if(tg.data_in_file){
+	if (tg.data_in_file) {
 		MPI_File_close(&tg.edgefile);
 	} else {
 		free(tg.edgememory);
@@ -607,8 +560,8 @@ int main(int argc, char **argv){
 	/*
 	 * Print results. 
 	 */
-	if(rank == 0){
-		if(!validation_passed){
+	if (rank == 0) {
+		if (!validation_passed) {
 			fprintf(stdout,
 				"No results printed for invalid run.\n");
 		} else {
@@ -667,7 +620,7 @@ int main(int argc, char **argv){
 				stats[s_std]);
 			double *secs_per_edge =
 			    (double *)xmalloc(num_bfs_roots * sizeof(double));
-			for(i = 0; i < num_bfs_roots; ++i)
+			for (i = 0; i < num_bfs_roots; ++i)
 				secs_per_edge[i] =
 				    bfs_times[i] / edge_counts[i];
 			get_statistics(secs_per_edge, num_bfs_roots, stats);
@@ -716,7 +669,7 @@ int main(int argc, char **argv){
 			fprintf(stdout, "stddev_validate:                %g\n",
 				stats[s_std]);
 #if 0
-			for(i = 0; i < num_bfs_roots; ++i){
+			for (i = 0; i < num_bfs_roots; ++i) {
 				fprintf(stdout,
 					"Run %3d:                        %g s, validation %g s\n",
 					i + 1, bfs_times[i], validate_times[i]);

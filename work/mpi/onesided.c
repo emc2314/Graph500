@@ -39,7 +39,8 @@ struct gather {
 
 gather *init_gather(void *input, size_t input_count, size_t elt_size,
 		    void *output, size_t output_count, size_t nrequests_max,
-		    MPI_Datatype dt){
+		    MPI_Datatype dt)
+{
 	gather *g = (gather *) xmalloc(sizeof(gather));
 
 	g->input = input;
@@ -52,27 +53,31 @@ gather *init_gather(void *input, size_t input_count, size_t elt_size,
 	return g;
 }
 
-void destroy_gather(gather * g){
+void destroy_gather(gather * g)
+{
 	assert(!g->valid);
 	MPI_Win_free(&g->win);
 	free(g);
 }
 
-void begin_gather(gather * g){
+void begin_gather(gather * g)
+{
 	assert(!g->valid);
 	g->valid = 1;
 	MPI_Win_fence(MPI_MODE_NOPRECEDE | MPI_MODE_NOPUT, g->win);
 }
 
 void add_gather_request(gather * g, size_t local_idx, int remote_rank,
-			size_t remote_idx, size_t req_id){
+			size_t remote_idx, size_t req_id)
+{
 	assert(g->valid);
 #pragma omp critical
 	MPI_Get(g->output + local_idx * g->elt_size, 1, g->datatype,
 		remote_rank, remote_idx, 1, g->datatype, g->win);
 }
 
-void end_gather(gather * g){
+void end_gather(gather * g)
+{
 	assert(g->valid);
 	MPI_Win_fence(MPI_MODE_NOSUCCEED, g->win);
 	g->valid = 0;
@@ -90,7 +95,8 @@ struct scatter_constant {
 
 scatter_constant *init_scatter_constant(void *array, size_t array_count,
 					size_t elt_size, void *constant,
-					size_t nrequests_max, MPI_Datatype dt){
+					size_t nrequests_max, MPI_Datatype dt)
+{
 	scatter_constant *sc =
 	    (scatter_constant *) xmalloc(sizeof(scatter_constant));
 	sc->array = array;
@@ -103,27 +109,31 @@ scatter_constant *init_scatter_constant(void *array, size_t array_count,
 	return sc;
 }
 
-void destroy_scatter_constant(scatter_constant * sc){
+void destroy_scatter_constant(scatter_constant * sc)
+{
 	assert(!sc->valid);
 	MPI_Win_free(&sc->win);
 	free(sc);
 }
 
-void begin_scatter_constant(scatter_constant * sc){
+void begin_scatter_constant(scatter_constant * sc)
+{
 	assert(!sc->valid);
 	sc->valid = 1;
 	MPI_Win_fence(MPI_MODE_NOPRECEDE, sc->win);
 }
 
 void add_scatter_constant_request(scatter_constant * sc, int remote_rank,
-				  size_t remote_idx, size_t req_id){
+				  size_t remote_idx, size_t req_id)
+{
 	assert(sc->valid);
 #pragma omp critical
 	MPI_Put(sc->constant, 1, sc->datatype, remote_rank, remote_idx, 1,
 		sc->datatype, sc->win);
 }
 
-void end_scatter_constant(scatter_constant * sc){
+void end_scatter_constant(scatter_constant * sc)
+{
 	assert(sc->valid);
 	MPI_Win_fence(MPI_MODE_NOSUCCEED | MPI_MODE_NOSTORE, sc->win);
 	sc->valid = 0;
@@ -142,7 +152,8 @@ struct scatter {
 };
 
 scatter *init_scatter(void *array, size_t array_count, size_t elt_size,
-		      size_t nrequests_max, MPI_Datatype dt){
+		      size_t nrequests_max, MPI_Datatype dt)
+{
 	scatter *sc = (scatter *) xmalloc(sizeof(scatter));
 
 	sc->array = array;
@@ -157,14 +168,16 @@ scatter *init_scatter(void *array, size_t array_count, size_t elt_size,
 	return sc;
 }
 
-void destroy_scatter(scatter * sc){
+void destroy_scatter(scatter * sc)
+{
 	assert(!sc->valid);
 	MPI_Win_free(&sc->win);
 	free(sc->send_data);
 	free(sc);
 }
 
-void begin_scatter(scatter * sc){
+void begin_scatter(scatter * sc)
+{
 	assert(!sc->valid);
 	sc->valid = 1;
 	sc->request_count = 0;
@@ -172,7 +185,8 @@ void begin_scatter(scatter * sc){
 }
 
 void add_scatter_request(scatter * sc, const char *local_data, int remote_rank,
-			 size_t remote_idx, size_t req_id){
+			 size_t remote_idx, size_t req_id)
+{
 	assert(sc->valid);
 	assert(sc->request_count < sc->nrequests_max);
 	memcpy(sc->send_data + sc->request_count * sc->elt_size, local_data,
@@ -184,10 +198,11 @@ void add_scatter_request(scatter * sc, const char *local_data, int remote_rank,
 	++sc->request_count;
 }
 
-void end_scatter(scatter * sc){
+void end_scatter(scatter * sc)
+{
 	assert(sc->valid);
 	MPI_Win_fence(MPI_MODE_NOSUCCEED | MPI_MODE_NOSTORE, sc->win);
 	sc->valid = 0;
 }
 
-#endif /* !EMULATE_ONE_SIDED */
+#endif				/* !EMULATE_ONE_SIDED */

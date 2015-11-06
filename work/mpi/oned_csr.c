@@ -37,7 +37,8 @@ typedef struct temp_csr_graph {
 } temp_csr_graph;
 
 static void make_empty_csr(temp_csr_graph *
-			   restrict const outg /* All fields NULL or 0 */ ){
+			   restrict const outg /* All fields NULL or 0 */ )
+{
 	outg->rowstarts = (size_t *) xcalloc(1, sizeof(size_t));
 	outg->column = NULL;	/* Realloc can enlarge a NULL pointer */
 	outg->nlocalverts = outg->nlocaledges = outg->nlocaledges_allocated = 0;
@@ -45,10 +46,10 @@ static void make_empty_csr(temp_csr_graph *
 }
 
 static void make_csr(const packed_edge * restrict const inbuf,
-		     temp_csr_graph *
-		     restrict const outg
+		     temp_csr_graph * restrict const outg
 		     /* Must have memory and nlocalverts/nlocaledges filled in */
-		     ){
+    )
+{
 	size_t nrows = outg->nlocalverts;
 	size_t inbuf_size = outg->nlocaledges;
 	size_t *temp = (size_t *) xmalloc(nrows * sizeof(size_t));
@@ -62,7 +63,7 @@ static void make_csr(const packed_edge * restrict const inbuf,
 		ptrdiff_t i;
 
 #pragma omp parallel for
-		for(i = 0; i < (ptrdiff_t) inbuf_size; ++i){
+		for (i = 0; i < (ptrdiff_t) inbuf_size; ++i) {
 			assert((size_t)
 			       (VERTEX_LOCAL(get_v0_from_edge(&inbuf[i]))) <
 			       nrows);
@@ -70,7 +71,7 @@ static void make_csr(const packed_edge * restrict const inbuf,
 			++counts[VERTEX_LOCAL(get_v0_from_edge(&inbuf[i]))];
 		}
 		rowstarts[0] = 0;
-		for(i = 0; i < nrows; ++i){
+		for (i = 0; i < nrows; ++i) {
 			rowstarts[i + 1] = rowstarts[i] + counts[i];
 		}
 	}
@@ -81,11 +82,11 @@ static void make_csr(const packed_edge * restrict const inbuf,
 		ptrdiff_t i;
 
 #pragma omp parallel for
-		for(i = 0; i < (ptrdiff_t) inbuf_size; ++i){
+		for (i = 0; i < (ptrdiff_t) inbuf_size; ++i) {
 			int64_t v0 = get_v0_from_edge(&inbuf[i]);
 			int64_t v1 = get_v1_from_edge(&inbuf[i]);
 
-			assert((size_t)(VERTEX_LOCAL(v0)) < nrows);
+			assert((size_t) (VERTEX_LOCAL(v0)) < nrows);
 			size_t pos =
 			    __sync_fetch_and_add(&inserts[VERTEX_LOCAL(v0)], 1);
 			assert(pos < inbuf_size);
@@ -97,13 +98,14 @@ static void make_csr(const packed_edge * restrict const inbuf,
 
 /* Do merge: b = b union a */
 static void merge_csr(temp_csr_graph * restrict const b,
-		      const temp_csr_graph * restrict const a){
+		      const temp_csr_graph * restrict const a)
+{
 	size_t a_nlocalverts = a->nlocalverts;
 	size_t b_nlocalverts = b->nlocalverts;
 	size_t a_nlocaledges = a->nlocaledges;
 	size_t b_nlocaledges = b->nlocaledges;
 
-	if(a->nlocalverts > b->nlocalverts){
+	if (a->nlocalverts > b->nlocalverts) {
 		ptrdiff_t old_b_nlocalverts = b_nlocalverts, i;
 
 		b->rowstarts =
@@ -111,13 +113,13 @@ static void merge_csr(temp_csr_graph * restrict const b,
 					(a_nlocalverts + 1) * sizeof(size_t));
 		b_nlocalverts = b->nlocalverts = a->nlocalverts;
 #pragma omp parallel for
-		for(i = old_b_nlocalverts; i < b_nlocalverts; ++i){
+		for (i = old_b_nlocalverts; i < b_nlocalverts; ++i) {
 			b->rowstarts[i + 1] = b_nlocaledges;
 		}
 		b->lg_nglobalverts = a->lg_nglobalverts;
 	}
 
-	if(b_nlocaledges + a_nlocaledges > b->nlocaledges_allocated){
+	if (b_nlocaledges + a_nlocaledges > b->nlocaledges_allocated) {
 		size_t new_alloc = b_nlocaledges + a_nlocaledges + (1 << 16);
 
 		b->nlocaledges_allocated = new_alloc;
@@ -131,7 +133,7 @@ static void merge_csr(temp_csr_graph * restrict const b,
 		 b->rowstarts[a_nlocalverts]) * sizeof(int64_t));
 	ptrdiff_t i_plus_1;
 
-	for(i_plus_1 = a_nlocalverts; i_plus_1 > 0; --i_plus_1){
+	for (i_plus_1 = a_nlocalverts; i_plus_1 > 0; --i_plus_1) {
 		ptrdiff_t i = i_plus_1 - 1;
 
 		memmove(&b->column[b->rowstarts[i] + a->rowstarts[i]],
@@ -147,11 +149,11 @@ static void merge_csr(temp_csr_graph * restrict const b,
 	ptrdiff_t i;
 
 #pragma omp parallel for
-	for(i = 0; i <= a_nlocalverts; ++i){
+	for (i = 0; i <= a_nlocalverts; ++i) {
 		b->rowstarts[i] += a->rowstarts[i];
 	}
 #pragma omp parallel for if(a_nlocalverts != b_nlocalverts)
-	for(i = a_nlocalverts + 1; i <= b_nlocalverts; ++i){
+	for (i = a_nlocalverts + 1; i <= b_nlocalverts; ++i) {
 		b->rowstarts[i] += a_nlocaledges;
 	}
 }
@@ -181,7 +183,7 @@ static void merge_csr(temp_csr_graph * restrict const b,
   packed_edge_mpi_type
 
 #define CONV1D_PRECOMPRESS_INCOMING_DATA(LG_NGLOBALVERTS_SO_FAR, EDGES_TO_RECV, EDGES_RECEIVED_THIS_BLOCK) \
-  size_t nlocalverts_so_far = (size_t)DIV_SIZE((UINT64_C(1) << (LG_NGLOBALVERTS_SO_FAR)) / ulong_bits_squared + size - 1) * ulong_bits_squared; \
+  size_t nlocalverts_so_far = (size_t)DIV_SIZE((UINT64_C(1) << (LG_NGLOBALVERTS_SO_FAR)) + size - 1); \
   temp_csr_graph t = { \
     /* rowstarts   */           (size_t*)xmalloc((size_t)(nlocalverts_so_far + 1) * sizeof(size_t)), \
     /* column      */           (int64_t*)xmalloc((size_t)(EDGES_RECEIVED_THIS_BLOCK) * sizeof(int64_t)), \
@@ -209,9 +211,9 @@ static void merge_csr(temp_csr_graph * restrict const b,
   g->nlocaledges = graph_so_far.nlocaledges; \
   g->rowstarts = graph_so_far.rowstarts; \
   g->column = (int64_t*)xrealloc(graph_so_far.column, (size_t)g->nlocaledges * sizeof(int64_t)); \
-  int64_t nlocalverts = (int64_t)(graph_so_far.nlocalverts); \
-  g->nlocalverts = (size_t)nlocalverts; \
-  MPI_Allreduce(&nlocalverts, &g->max_nlocalverts, 1, MPI_INT64_T, MPI_MAX, MPI_COMM_WORLD); \
+  size_t nlocalverts = graph_so_far.nlocalverts; \
+  g->nlocalverts = nlocalverts; \
+  g->max_nlocalverts = nlocalverts; /* Now same on all ranks */ \
   g->lg_nglobalverts = graph_so_far.lg_nglobalverts; \
   g->nglobalverts = INT64_C(1) << graph_so_far.lg_nglobalverts;
 
@@ -230,19 +232,21 @@ static MAKE_REDISTRIBUTE_FUNC(CONV1D_FUNCNAME, CONV1D_EXTRA_PARAMS,
 			      CONV1D_BUILD_FINAL_DATA_STRUCTURE_FROM_GRAPH_SO_FAR,
 			      CONV1D_CLEAR_GRAPH_SO_FAR)
 
-     void convert_graph_to_oned_csr(const tuple_graph * const tg,
-				    oned_csr_graph * const g){
+void convert_graph_to_oned_csr(const tuple_graph * const tg,
+			       oned_csr_graph * const g)
+{
 	g->tg = tg;
 	g->nlocaledges = 0;
 	convert_graph_to_oned_csr_helper(tg, g);
-     }
+}
 
-void free_oned_csr_graph(oned_csr_graph * const g){
-	if(g->rowstarts != NULL){
+void free_oned_csr_graph(oned_csr_graph * const g)
+{
+	if (g->rowstarts != NULL) {
 		free(g->rowstarts);
 		g->rowstarts = NULL;
 	}
-	if(g->column != NULL){
+	if (g->column != NULL) {
 		free(g->column);
 		g->column = NULL;
 	}
