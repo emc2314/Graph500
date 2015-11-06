@@ -40,7 +40,8 @@ typedef struct temp_csc_graph {
 } temp_csc_graph;
 
 static void make_empty_csc(temp_csc_graph *
-			   restrict const outg /* All fields NULL or 0 */ ){
+			   restrict const outg /* All fields NULL or 0 */ )
+{
 	outg->rowstarts = (size_t *) xcalloc(1, sizeof(size_t));
 	outg->column = NULL;	/* Realloc can enlarge a NULL pointer */
 	outg->nlocalverts = outg->nglobalverts = outg->nlocaledges =
@@ -51,10 +52,10 @@ static void make_empty_csc(temp_csc_graph *
 }
 
 static void make_csc(const packed_edge * restrict const inbuf,
-		     temp_csc_graph *
-		     restrict const outg
+		     temp_csc_graph * restrict const outg
 		     /* Must have memory and nlocalverts/nglobalverts/nlocaledges filled in */
-		     ){
+    )
+{
 	size_t nrows = outg->nrows;
 	size_t inbuf_size = outg->nlocaledges;
 	size_t *temp = (size_t *) xmalloc(nrows * sizeof(size_t));
@@ -69,7 +70,7 @@ static void make_csc(const packed_edge * restrict const inbuf,
 		ptrdiff_t i;
 
 #pragma omp parallel for
-		for(i = 0; i < (ptrdiff_t) inbuf_size; ++i){
+		for (i = 0; i < (ptrdiff_t) inbuf_size; ++i) {
 			assert((size_t)
 			       (SWIZZLE_VERTEX(get_v1_from_edge(&inbuf[i])) /
 				ULONG_BITS) < nrows);
@@ -78,7 +79,7 @@ static void make_csc(const packed_edge * restrict const inbuf,
 				 ULONG_BITS];
 		}
 		rowstarts[0] = 0;
-		for(i = 0; i < nrows; ++i){
+		for (i = 0; i < nrows; ++i) {
 			rowstarts[i + 1] = rowstarts[i] + counts[i];
 		}
 	}
@@ -89,7 +90,7 @@ static void make_csc(const packed_edge * restrict const inbuf,
 		ptrdiff_t i;
 
 #pragma omp parallel for
-		for(i = 0; i < (ptrdiff_t) inbuf_size; ++i){
+		for (i = 0; i < (ptrdiff_t) inbuf_size; ++i) {
 			int64_t v0 = get_v0_from_edge(&inbuf[i]);
 			int64_t v1 =
 			    SWIZZLE_VERTEX(get_v1_from_edge(&inbuf[i]));
@@ -108,13 +109,14 @@ static void make_csc(const packed_edge * restrict const inbuf,
 
 /* Do merge: b = b union a */
 static void merge_csc(temp_csc_graph * restrict const b,
-		      temp_csc_graph * restrict const a){
-	if(b->lg_local_queue_size == -1){	// b is empty
-		if(b->rowstarts != NULL){
+		      temp_csc_graph * restrict const a)
+{
+	if (b->lg_local_queue_size == -1) {	// b is empty
+		if (b->rowstarts != NULL) {
 			free(b->rowstarts);
 			b->rowstarts = NULL;
 		}
-		if(b->column != NULL){
+		if (b->column != NULL) {
 			free(b->column);
 			b->column = NULL;
 		}
@@ -122,7 +124,7 @@ static void merge_csc(temp_csc_graph * restrict const b,
 		a->rowstarts = NULL;
 		a->column = NULL;
 		return;
-	} else if(a->nglobalverts != b->nglobalverts){
+	} else if (a->nglobalverts != b->nglobalverts) {
 		/*
 		 * Redistribution wrapper should restart in this case, not try to do a merge. 
 		 */
@@ -138,7 +140,7 @@ static void merge_csc(temp_csc_graph * restrict const b,
 		size_t b_nlocaledges = b->nlocaledges;
 		size_t nrows = b->nrows;
 
-		if(b_nlocaledges + a_nlocaledges > b->nlocaledges_allocated){
+		if (b_nlocaledges + a_nlocaledges > b->nlocaledges_allocated) {
 			size_t new_alloc =
 			    b_nlocaledges + a_nlocaledges + (1 << 16);
 			b->nlocaledges_allocated = new_alloc;
@@ -151,7 +153,7 @@ static void merge_csc(temp_csc_graph * restrict const b,
 		/*
 		 * This loop needs to be sequential. 
 		 */
-		for(i_plus_1 = nrows; i_plus_1 > 0; --i_plus_1){
+		for (i_plus_1 = nrows; i_plus_1 > 0; --i_plus_1) {
 			ptrdiff_t i = i_plus_1 - 1;
 
 			memmove(&b->column[b->rowstarts[i] + a->rowstarts[i]],
@@ -163,11 +165,11 @@ static void merge_csc(temp_csc_graph * restrict const b,
 		 * This loop can be parallel. 
 		 */
 #pragma omp parallel for
-		for(i_plus_1 = nrows; i_plus_1 > 0; --i_plus_1){
+		for (i_plus_1 = nrows; i_plus_1 > 0; --i_plus_1) {
 			ptrdiff_t i = i_plus_1 - 1;
 
-			memcpy(&b->
-			       column[b->rowstarts[i + 1] + a->rowstarts[i]],
+			memcpy(&b->column
+			       [b->rowstarts[i + 1] + a->rowstarts[i]],
 			       &a->column[a->rowstarts[i]],
 			       (a->rowstarts[i + 1] -
 				a->rowstarts[i]) * sizeof(int64_t));
@@ -176,7 +178,7 @@ static void merge_csc(temp_csc_graph * restrict const b,
 		ptrdiff_t i;
 
 #pragma omp parallel for
-		for(i = 0; i <= nrows; ++i){
+		for (i = 0; i <= nrows; ++i) {
 			b->rowstarts[i] += a->rowstarts[i];
 		}
 		free(a->column);
@@ -272,12 +274,13 @@ static MAKE_REDISTRIBUTE_FUNC(CONV1D_FUNCNAME, CONV1D_EXTRA_PARAMS,
 			      CONV1D_BUILD_FINAL_DATA_STRUCTURE_FROM_GRAPH_SO_FAR,
 			      CONV1D_CLEAR_GRAPH_SO_FAR)
 
-     void convert_graph_to_oned_csc(const tuple_graph * const tg,
-				    oned_csc_graph * const g){
+void convert_graph_to_oned_csc(const tuple_graph * const tg,
+			       oned_csc_graph * const g)
+{
 	g->tg = tg;
 	g->nlocaledges = 0;
 	convert_graph_to_oned_csc_helper(tg, g);
-	g->max_nlocalverts = (int64_t)(g->nlocalverts);
+	g->max_nlocalverts = (int64_t) (g->nlocalverts);
 	MPI_Allreduce(MPI_IN_PLACE, &g->max_nlocalverts, 1, MPI_INT64_T,
 		      MPI_MAX, MPI_COMM_WORLD);
 	int64_t local_queue_summary_size =
@@ -285,21 +288,22 @@ static MAKE_REDISTRIBUTE_FUNC(CONV1D_FUNCNAME, CONV1D_EXTRA_PARAMS,
 	     1) / ULONG_BITS / ULONG_BITS;
 	int64_t local_queue_size = local_queue_summary_size * ULONG_BITS;
 
-	if(g->lg_local_queue_size != lg_int64_t(local_queue_size)){
+	if (g->lg_local_queue_size != lg_int64_t(local_queue_size)) {
 		fprintf(stderr,
 			"%d: lg_local_queue_size mismatch: graph redistribution computed %d, convert_graph_to_oned_csc outer computed %d from %"
 			PRId64 "\n", rank, g->lg_local_queue_size,
 			lg_int64_t(local_queue_size), local_queue_size);
 		MPI_Abort(MPI_COMM_WORLD, 6);
 	}
-     }
+}
 
-void free_oned_csc_graph(oned_csc_graph * const g){
-	if(g->rowstarts != NULL){
+void free_oned_csc_graph(oned_csc_graph * const g)
+{
+	if (g->rowstarts != NULL) {
 		free(g->rowstarts);
 		g->rowstarts = NULL;
 	}
-	if(g->column != NULL){
+	if (g->column != NULL) {
 		free(g->column);
 		g->column = NULL;
 	}

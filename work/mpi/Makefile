@@ -1,12 +1,12 @@
 CFLAGS = -fopenmp -g -Wall -Drestrict=__restrict__ -O3 -DNDEBUG -ffast-math -DGRAPH_GENERATOR_MPI # -g -pg
 # CFLAGS = -g -Wall -Drestrict= -DGRAPH_GENERATOR_MPI
 LDFLAGS = -fopenmp -g # -g -pg
-MPICC = mpiicc
+MPICC = mpicc
 
 all: graph500_mpi_simple graph500_mpi_one_sided graph500_mpi_replicated graph500_mpi_replicated_csc graph500_mpi_custom
 
 GENERATOR_SOURCES = ../generator/graph_generator.c ../generator/make_graph.c ../generator/splittable_mrg.c ../generator/utils.c
-SOURCES = main.c oned_csr.c oned_csc.c utils.c validate.c onesided.c onesided_emul.c
+SOURCES = main.c oned_csr.c oned_csc.c utils.c validate.c onesided.c
 HEADERS = common.h oned_csr.h oned_csc.h redistribute.h mpi_workarounds.h onesided.h
 
 graph500_mpi_simple: bfs_simple.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES)
