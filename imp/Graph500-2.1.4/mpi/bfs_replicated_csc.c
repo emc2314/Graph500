@@ -19,6 +19,7 @@
 #include <string.h>
 #include <limits.h>
 #include <assert.h>
+#define MIX
 
 static oned_csc_graph g;
 static unsigned long* g_in_queue;
@@ -84,6 +85,10 @@ void run_bfs(int64_t root, int64_t* pred) {
   int64_t local_queue_summary_size = local_queue_size / ULONG_BITS;
   int64_t global_queue_summary_size = MUL_SIZE(local_queue_summary_size);
   int64_t global_queue_size = MUL_SIZE(local_queue_size);
+  int64_t maxlocalverts = g.max_nlocalverts;
+  int64_t global_queue_count = 0;
+  int64_t local_queue_count = 0;
+  int64_t global_visited_count = 0;
 
 #if 0
   int64_t* restrict column_swizzled = (int64_t*)xmalloc(nlocaledges * sizeof(int64_t));
@@ -113,14 +118,23 @@ void run_bfs(int64_t root, int64_t* pred) {
 #define SET_VISITED_LOCAL(v) do {size_t word_idx = (v) / ULONG_BITS; int bit_idx = (v) % ULONG_BITS; unsigned long mask = (1UL << bit_idx); visited[word_idx] |= mask; out_queue[word_idx] |= mask;} while (0)
 
   SET_IN(root);
+  global_queue_count = 1;
   {ptrdiff_t i; _Pragma("omp parallel for schedule(static)") for (i = 0; i < nlocalverts; ++i) pred[i] = -1;}
   if (VERTEX_OWNER(root) == rank) {
     pred[VERTEX_LOCAL(root)] = root;
     SET_VISITED_LOCAL(VERTEX_LOCAL(root));
+    ++local_queue_count;
   }
   uint16_t cur_level = 0;
   while (1) {
     ++cur_level;
+    global_visited_count += global_queue_count;
+
+#ifdef MIX
+if(global_queue_count < maxlocalverts - global_visited_count) {
+#endif
+
+    if(rank == 0) printf("level %" PRIu16 ": top down\n", cur_level);
 #if 0
     if (rank == 0) fprintf(stderr, "BFS level %" PRIu16 "\n", cur_level);
 #endif
@@ -139,8 +153,9 @@ void run_bfs(int64_t root, int64_t* pred) {
       in_queue_summary[i] = val;
     }
 #endif
-    unsigned long not_done = 0;
-#pragma omp parallel for schedule(static) reduction(|:not_done)
+    //unsigned long not_done = 0;
+    local_queue_count = 0;
+#pragma omp parallel for schedule(static) reduction(+:local_queue_count)//|:not_done
     for (ii_summary = 0; ii_summary < global_queue_summary_size; ++ii_summary) {
       uint64_t val_summary = in_queue_summary[ii_summary];
       if (val_summary == 0) continue;
@@ -156,10 +171,12 @@ void run_bfs(int64_t root, int64_t* pred) {
           int64_t c = column[i];
           int64_t v0_local = c / ULONG_BITS;
           if ((val & (UINT64_C(1) << (c % ULONG_BITS))) != 0 /* TEST_IN(v1_swizzled) */ && !TAS_VISITED_LOCAL(v0_local)) {
-            assert (pred[v0_local] == -1);
+            //assert (pred[v0_local] == -1);
             int64_t v1_swizzled = (int64_t)ii * ULONG_BITS + c % ULONG_BITS;
             pred[v0_local] = UNSWIZZLE_VERTEX(v1_swizzled);
-            not_done |= 1;
+            //printf("%" PRId64 " -> %" PRId64 "\n", pred[v0_local], v0_local);
+            //not_done |= 1;
+            ++local_queue_count;
           }
         }
       }
@@ -179,8 +196,86 @@ void run_bfs(int64_t root, int64_t* pred) {
       // not_done |= val;
     }
 #endif
-    MPI_Allreduce(MPI_IN_PLACE, &not_done, 1, MPI_UNSIGNED_LONG, MPI_BOR, MPI_COMM_WORLD);
-    if (not_done == 0) break;
+
+#ifdef MIX
+}
+else {
+    if(rank == 0) printf("level %" PRIu16 ": bottom up\n", cur_level);
+#if 0
+    if (rank == 0) fprintf(stderr, "BFS level %" PRIu16 "\n", cur_level);
+#endif
+    memset(out_queue, 0, local_queue_size * sizeof(unsigned long));
+    // memset(out_queue_summary, 0, local_queue_summary_size * sizeof(unsigned long));
+    ptrdiff_t i, ii_summary;
+#if 0
+#pragma omp parallel for schedule(static)
+    for (i = 0; i < global_queue_summary_size; ++i) {
+      unsigned long val = 0UL;
+      int j;
+      unsigned long mask = 1UL;
+      for (j = 0; j < ULONG_BITS; ++j, mask <<= 1) {
+        if (in_queue[i * ULONG_BITS + j]) val |= mask;
+      }
+      in_queue_summary[i] = val;
+    }
+#endif
+    //unsigned long not_done = 0;
+    local_queue_count = 0;
+#pragma omp parallel for schedule(static) reduction(+:local_queue_count)//|:not_done
+    for (ii_summary = 0; ii_summary < global_queue_summary_size; ++ii_summary) {
+      int ii_offset;
+      ptrdiff_t ii;
+      for (ii_offset = 0; ii_offset < ULONG_BITS; ++ii_offset) {
+        ii = ii_summary * ULONG_BITS + ii_offset;
+        size_t i, i_end = rowstarts[ii + 1];
+        for (i = rowstarts[ii]; i < i_end; ++i) {
+          int64_t c = column[i];
+          int64_t v0_local = c / ULONG_BITS;
+          if(!TEST_VISITED_LOCAL(v0_local)){
+              uint64_t val = in_queue[ii];
+              if (val == 0) continue;
+              if ((val & (UINT64_C(1) << (c % ULONG_BITS))) != 0 && !TAS_VISITED_LOCAL(v0_local)) {
+                  //assert (pred[v0_local] == -1);
+                  int64_t v1_swizzled = (int64_t)ii * ULONG_BITS + c % ULONG_BITS;
+                  pred[v0_local] = UNSWIZZLE_VERTEX(v1_swizzled);
+                  //printf("%" PRId64 " -> %" PRId64 "\n", pred[v0_local], v0_local);
+                  //not_done |= 1;
+                  ++local_queue_count;
+              }
+          }
+        }
+      }
+    }
+#if 1
+#pragma omp parallel for schedule(static)
+    for (i = 0; i < local_queue_summary_size; ++i) {
+      unsigned long val = 0UL;
+      int j;
+      unsigned long mask = 1UL;
+      for (j = 0; j < ULONG_BITS; ++j, mask <<= 1) {
+        unsigned long full_val = out_queue[i * ULONG_BITS + j];
+        visited[i * ULONG_BITS + j] |= full_val;
+        if (full_val) val |= mask;
+      }
+      out_queue_summary[i] = val;
+      // not_done |= val;
+    }
+#endif
+}
+#endif
+
+    //printf("rank %d local_queue_count: %" PRId64 "\n", rank, local_queue_count);
+    //global_queue_count = 0;
+    MPI_Allreduce(&local_queue_count, &global_queue_count, 1, MPI_INT64_T, MPI_SUM, MPI_COMM_WORLD);
+    //if(rank == 0)
+    //    printf("BFS level %" PRIu16 " global_queue_count: %" PRId64 "\n", cur_level, global_queue_count);
+    if(global_queue_count == 0) {
+        //if(rank == 0)
+        //    printf("global_visited_count = %" PRId64 "\n", global_visited_count);
+        break;
+    }
+    //MPI_Allreduce(MPI_IN_PLACE, &not_done, 1, MPI_UNSIGNED_LONG, MPI_BOR, MPI_COMM_WORLD);
+    //if (not_done == 0) break;
     MPI_Allgather(out_queue, local_queue_size, MPI_UNSIGNED_LONG, in_queue, local_queue_size, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
     MPI_Allgather(out_queue_summary, local_queue_summary_size, MPI_UNSIGNED_LONG, in_queue_summary, local_queue_summary_size, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
   }
