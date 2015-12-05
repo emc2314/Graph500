@@ -324,7 +324,7 @@ int main(int argc, char** argv) {
     double validate_stop = MPI_Wtime();
     validate_times[bfs_root_idx] = validate_stop - validate_start;
     if (rank == 0) fprintf(stderr, "Validate time for BFS %d is %f\n", bfs_root_idx, validate_times[bfs_root_idx]);
-    edge_counts[bfs_root_idx] = (double)edge_visit_count;
+    edge_counts[bfs_root_idx] = (double)edge_visit_count; //(double)tg.nglobaledges;
     if (rank == 0) fprintf(stderr, "TEPS for BFS %d is %g\n", bfs_root_idx, edge_visit_count / bfs_times[bfs_root_idx]);
 
     if (!validation_passed_one) {

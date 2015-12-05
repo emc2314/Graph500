@@ -38,6 +38,9 @@ static void allocate_memory(void) {
   g_out_queue = (unsigned long*)xmalloc(local_queue_size * sizeof(unsigned long));
   g_out_queue_summary = (unsigned long*)xmalloc(local_queue_summary_size * sizeof(unsigned long));
   g_visited = (unsigned long*)xmalloc(local_queue_size * sizeof(unsigned long));
+
+//  printf("rank: %d\n", rank);
+//  printf("local_queue_summary_size: %" PRId64 "\nlocal_queue_size: %" PRId64 "\nglobal_queue_summary_size: %" PRId64 "\nglobal_queue_size: %" PRId64 "\n", local_queue_summary_size, local_queue_size, global_queue_summary_size, global_queue_size);
 }
 
 static void deallocate_memory(void) {
@@ -50,6 +53,7 @@ static void deallocate_memory(void) {
 
 void make_graph_data_structure(const tuple_graph* const tg) {
   convert_graph_to_oned_csc(tg, &g);
+//  printf("nlocalverts: %lu\nmax_nlocalverts: %" PRId64 "\nnlocaledges: %lu\nlg_nglobalverts: %d\nnglobalverts: %" PRId64 "\nlg_local_queue_size: %d\n", g.nlocalverts, g.max_nlocalverts, g.nlocaledges, g.lg_nglobalverts , g.nglobalverts, g.lg_local_queue_size);
   allocate_memory(); /* Make sure all of the space is available */
   deallocate_memory();
 }
