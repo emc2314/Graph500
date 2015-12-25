@@ -1,0 +1,38 @@
+Location		Rec. Level		File
+
+Algorithm/SpMV	Low				CSX An Extended Compression Format for SpMV on Shared Memory Systems
+				Low				Efficient Sparse Matrix-Vector Multiplication on CUDA
+				Low				Efficient Sparse Matrix-Vector Multiplication on x86-Based Many-Core Processors
+				Low				Fast sparse matrix-vector multiplication by exploiting variable block structure
+				Low				Fast Sparse Matrix-Vector Multiplication on GPUs, Implications for Graph Mining
+				Low				Implementing Sparse Matrix-Vector Multiplication on Throughput-Oriented Processors
+				Low				Improving Performance of Sparse Matrix-Vector Multiplication
+				Low				NEW SPARSE MATRIX STORAGE FORMAT TO IMPROVE THE PERFORMANCE OF TOTAL SPMV TIME
+				Low				On the Representation and Multiplication of Hypersparse Matrices
+				Low				Parallel Sparse Matrix-Vector and Matrix-Transpose-Vector Multiplication Using Compressed Sparse Blocks
+				Medium			Scalable Matrix Computations on Large Scale-Free Graphs Using 2D Graph Partitioning
+
+Algorithm		Medium			2D Partitioning Based Graph Search for the Graph500 Benchmark
+				High			A scalable distributed parallel breadth-first search algorithm on BlueGeneL
+				Low				A Scalable Implementation of a MapReduce-based Graph Processing Algorithm for Large-Scale Heterogeneous Supercomputers
+				Medium			Breaking the speed and scalability barriers for graph exploration on distributed-memory machines
+				Medium			Compression and Sieve, Reducing Communication in Parallel Breadth First Search on Distributed Memory Systems
+				High			Direction-Optimizing Breadth-First Search && Searching for a Parent Instead of Fighting Over Children, A Fast Breadth-First Search Implementation for Graph500
+				Medium			Distributed-Memory Breadth-First Search on Massive Graphs && Distributed Memory Breadth-First Search Revisited Enabling Bottom-Up Search
+				Medium			Efficient Parallel Graph Exploration on MultiCore CPU and GPU
+				Low				Evaluation and Optimization of Breadth-First Search on NUMA Cluster
+				High			Fast and Efficient Graph Traversal Algorithm for CPUs Maximizing Single-Node Efficiency && Fast and Energy-efficient Breadth-First Search on a Single NUMA System && Fast and Scalable NUMA-basedThread Parallel Breadth-first Search && NUMA-optimized Parallel Breadth-first Search on Multicore Single-node System
+				Low				Fast iterative graph computation, A path centric approach
+				High			Highly scalable graph search for the Graph500 benchmark
+				Low				Hypergraph-Partitioning-Based Decomposition for Parallel Sparse-Matrix Vector Multiplication
+				Low				Parallel breadth-first search on distributed memory systems
+				Medium			Traversing Trillions of Edges in Real-time Graph Exploration on Large-scale Parallel Machines
+				Medium			Understanding parallelism in graph traversal on multi-core clusters
+
+Introduction	Low				How to win Graph500
+
+Int./kronecker	Low				Kronecker Graphs
+
+Performance		High			*
+
+GPU or MIC		Unknown			*
