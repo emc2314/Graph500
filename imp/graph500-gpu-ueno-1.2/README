@@ -1,0 +1,57 @@
+To build this program, do the following commands.
+
+cd mpi
+make
+
+It is required to set CUDA_PATH to appropriate directory.
+
+Then you can run the program. For example,
+
+Open MPI
+mpirun -n 8 -x OMP_NUM_THREADS=8 -x MPI_NUM_NODE=4 ./runnable 23
+
+MVAPICH2
+OMP_NUM_THREADS=8 MPI_NUM_NODE=4 mpirun -n 8 ./runnable 23
+
+Both examples above will launch 8 processes and execute the Graph500 benchmark with the problem size, Scale 23.
+MPI_NUM_NODE is the number of compute nodes. This parameter is required to enable CPU affinity, which is important for the NUMA environment. If you are using non NUMA machine, you do not have to provide MPI_NUM_NODE.
+
+- Optimized communicatin for 3D torus network
+When the machine has a 3D torus network, optimized process distribution can be used by providing the environment variable, THREED_MAP as the following format.
+
+THREED_MAP=XxYxZ1xZ2
+
+where the physical processor dimension is XxYxZ and Z=Z1xZ2.
+The 2D processor dimension will be bascially (RxC) = (XxZ1)x(YxZ2).
+If XxZ1 and/or XxZ2 is not a power of two, the maximum value that is a power of two and less than the scpecified value will be used.
+
+Example:
+Case 1
+The physical processor dimension: 4x8x8
+THREED_MAP=4x8x4x2
+RxC: (4x4)x(8x2) = 16x16 -> 16x16
+
+Case 2
+The physical processor dimension: 12x8x12
+THREED_MAP=12x8x3x4
+RxC: (12x3)x(8x4) = 36x32 -> 32x32
+
+Note: In the case 2, even through only 32x32=1024 processes will execute the benchmark, we have to run 12x8x12=1152 processes. The following command is example for this case.
+
+mpirun -n 1152 -x OMP_NUM_THREADS=14 -x MPI_NUM_NODE=1152 -x THREED_MAP=12x8x3x4 ./runnable 33
+
+Note: When the physical dimension is XxYxZ, we assume the MPI rank as following.
+(x,y,z) -> MPI rank
+(0,0,0) -> 0
+(1,0,0) -> 1
+(2,0,0) -> 2
+...
+(X-1,0,0) -> X-1
+(0,1,0) -> X
+(1,1,0) -> X+1
+...
+(X-1,Y-1,0) -> XY-1
+(0,0,1) -> XY
+(1,0,1) -> XY+1
+...
+(X-1,Y-1,Z-1) -> XYZ-1

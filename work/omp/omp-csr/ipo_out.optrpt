@@ -1,0 +1,2583 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: disabled
+  -inline-max-per-compile: disabled
+
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main(int, char **)) [1] graph500.c(61,1)
+  -> EXTERN: (69,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> (70,5) get_options(int, char **)
+  -> INLINE (MANUAL): (71,19) atoi(const char *)
+    -> EXTERN: /usr/include/stdlib.h:(286,16) strtol(const char *__restrict__, char **__restrict__, int)
+  -> INLINE (MANUAL): (72,9) atoi(const char *)
+    -> EXTERN: /usr/include/stdlib.h:(286,16) strtol(const char *__restrict__, char **__restrict__, int)
+  -> INLINE (MANUAL): (73,8) atoi(const char *)
+    -> EXTERN: /usr/include/stdlib.h:(286,16) strtol(const char *__restrict__, char **__restrict__, int)
+  -> (75,3) init_random(void)
+  -> EXTERN: (79,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> EXTERN: (80,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> EXTERN: (88,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> (91,12) xmalloc_large_ext(size_t)
+  -> INLINE: (92,7) toc(void)
+    -> EXTERN: timer.c:(68,3) clock_gettime(clockid_t, struct timespec *)
+  -> (92,7) rmat_edgelist(struct packed_edge *, int64_t, int, double, double, double)
+  -> INLINE: (92,7) tic(void)
+    -> EXTERN: timer.c:(43,3) clock_gettime(clockid_t, struct timespec *)
+  -> INLINE: (94,7) tic(void)
+    -> EXTERN: timer.c:(43,3) clock_gettime(clockid_t, struct timespec *)
+  -> INLINE: (94,7) make_graph(int, int64_t, uint64_t, uint64_t, int64_t *, packed_edge **)
+    -> INLINE: generator/make_graph.c:(50,3) make_mrg_seed(uint64_t, uint64_t, uint_fast32_t *)
+    -> INLINE: generator/make_graph.c:(53,38) xmalloc(size_t)
+      -> EXTERN: generator/utils.c:(32,13) malloc(size_t)
+      -> EXTERN: generator/utils.c:(34,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+      -> EXTERN: generator/utils.c:(35,5) abort(void)
+    -> generator/make_graph.c:(58,3) generate_kronecker_range(const uint_fast32_t *, int, int64_t, int64_t, packed_edge *)
+  -> INLINE: (94,7) toc(void)
+    -> EXTERN: timer.c:(68,3) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (96,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (100,15) open(const char *, int, ...)
+  -> EXTERN: (101,7) perror(const char *)
+  -> EXTERN: (105,15) read(int, void *, size_t)
+  -> EXTERN: (106,7) perror(const char *)
+  -> EXTERN: (109,5) close(int)
+  -> (112,3) run_bfs(void)
+  -> INLINE: (114,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+  -> (116,3) output_results(const int64_t, int64_t, int64_t, const double, const double, const double, const double, const double, const double, const int, const double *, const int64_t *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into graph500.c(114,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(114,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(114,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: generate_kronecker_range(const uint_fast32_t *, int, int64_t, int64_t, packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (generate_kronecker_range(const uint_fast32_t *, int, int64_t, int64_t, packed_edge *)) [2] generator/graph_generator.c(167,28)
+  -> INLINE: (172,3) mrg_seed(mrg_state *, const uint_fast32_t *)
+  -> INLINE: (177,5) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> INLINE: (178,12) mrg_get_uint_orig(mrg_state *)
+    -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+  -> INLINE: (180,13) mrg_get_uint_orig(mrg_state *)
+    -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+  -> INLINE: (181,12) mrg_get_uint_orig(mrg_state *)
+    -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+  -> INLINE: (183,13) mrg_get_uint_orig(mrg_state *)
+    -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+  -> INLINE: (195,5) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> (196,5) make_one_edge(int64_t, int, int, mrg_state *, packed_edge *, uint64_t, uint64_t)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+generator/graph_generator.c(187:1-187:1):OMP:generate_kronecker_range:  OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at generator/graph_generator.c(193,3)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ generator/splittable_mrg.c(165,3) ]
+
+   LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into generator/graph_generator.c(195,5)
+      remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: make_one_edge(int64_t, int, int, mrg_state *, packed_edge *, uint64_t, uint64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (make_one_edge(int64_t, int, int, mrg_state *, packed_edge *, uint64_t, uint64_t)) [3] generator/graph_generator.c(134,122)
+  -> INLINE: (137,18) generate_4way_bernoulli(mrg_state *, int, int)
+    -> INLINE: (45,18) mrg_get_uint_orig(mrg_state *)
+      -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+    -> INLINE: (48,13) mrg_get_uint_orig(mrg_state *)
+      -> generator/splittable_mrg.c:(268,3) mrg_orig_step(mrg_state *)
+  -> EXTERN: (140,5) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (154,3) write_edge(packed_edge *, int64_t, int64_t)
+  -> INLINE (MANUAL): (155,14) scramble(int64_t, int, uint64_t, uint64_t)
+    -> INLINE (MANUAL): (124,8) bitreverse(uint64_t)
+      -> EXTERN: (82,7) __builtin_bswap64(unsigned long)
+    -> EXTERN: (125,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE (MANUAL): (127,8) bitreverse(uint64_t)
+      -> EXTERN: (82,7) __builtin_bswap64(unsigned long)
+    -> EXTERN: (128,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (156,14) scramble(int64_t, int, uint64_t, uint64_t)
+    -> INLINE (MANUAL): (124,8) bitreverse(uint64_t)
+      -> EXTERN: (82,7) __builtin_bswap64(unsigned long)
+    -> EXTERN: (125,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE (MANUAL): (127,8) bitreverse(uint64_t)
+      -> EXTERN: (82,7) __builtin_bswap64(unsigned long)
+    -> EXTERN: (128,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at generator/graph_generator.c(136,3)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+   LOOP BEGIN at generator/graph_generator.c(49,20) inlined into generator/graph_generator.c(137,18)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: mrg_orig_step(mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mrg_orig_step(mrg_state *)) [4] generator/splittable_mrg.c(171,45)
+  -> INLINE (MANUAL): (172,27) mod_mac_y(uint_fast32_t, uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(86,10) mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (33,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (34,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (35,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (172,37) mod_mul_x(uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(78,10) mod_mul(uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (27,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (28,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+
+===========================================================================
+
+Begin optimization report for: rmat_edgelist(struct packed_edge *, int64_t, int, double, double, double)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (rmat_edgelist(struct packed_edge *, int64_t, int, double, double, double)) [5] rmat.c(184,1)
+  -> (189,11) xmalloc_large_ext(size_t)
+  -> EXTERN: (194,32) __builtin_alloca(unsigned long)
+  -> INLINE: (204,2) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> INLINE: (206,17) mrg_get_double_orig(mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(274,18) mrg_get_uint_orig(mrg_state *)
+      -> (268,3) mrg_orig_step(mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(275,18) mrg_get_uint_orig(mrg_state *)
+      -> (268,3) mrg_orig_step(mrg_state *)
+  -> INLINE: (207,2) rmat_edge(struct packed_edge *, int, double, double, double, double, const double *)
+    -> INLINE (MANUAL): (80,3) write_edge(packed_edge *, int64_t, int64_t)
+  -> INLINE: (211,7) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> (214,5) permute_vertex_labels(struct packed_edge *__restrict__, int64_t, int64_t, mrg_state *__restrict__, int64_t *__restrict__)
+  -> INLINE: (216,7) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> (219,5) permute_edgelist(struct packed_edge *__restrict__, int64_t, mrg_state *)
+  -> INLINE: (221,3) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+    -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+      -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+  -> INLINE: (223,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+rmat.c(212:5-212:5):OMP:rmat_edgelist:  OpenMP multithreaded code generation for BARRIER was successful
+rmat.c(217:5-217:5):OMP:rmat_edgelist:  OpenMP multithreaded code generation for BARRIER was successful
+rmat.c(210:5-210:5):OMP:rmat_edgelist:  OpenMP multithreaded code generation for SINGLE was successful
+rmat.c(215:5-215:5):OMP:rmat_edgelist:  OpenMP multithreaded code generation for SINGLE was successful
+rmat.c(191:3-191:3):OMP:rmat_edgelist:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into rmat.c(223,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into rmat.c(223,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into rmat.c(223,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(221,3)
+   remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at rmat.c(199,7)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ generator/splittable_mrg.c(165,3) ]
+
+   LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(204,2)
+      remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at rmat.c(205,2)
+      remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ generator/splittable_mrg.c(268,3) ]
+   LOOP END
+
+   LOOP BEGIN at rmat.c(77,5) inlined into rmat.c(207,2)
+      remark #15522: loop was not vectorized: loop control flow is too complex. Try using canonical loop form
+   LOOP END
+LOOP END
+
+LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(211,7)
+   remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(216,7)
+   remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)) [6] generator/splittable_mrg.c(116,121)
+  -> INLINE (MANUAL): (148,22) mod_mac_y(uint_fast32_t, uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(86,10) mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (33,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (34,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (35,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (148,32) mod_mul(uint_fast32_t, uint_fast32_t)
+    -> EXTERN: generator/mod_arith_64bit.h:(27,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(28,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (148,57) mod_mac4(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> DELETED: generator/mod_arith_64bit.h:(60,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(61,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(62,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(63,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(64,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(65,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(66,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(67,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(68,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (149,22) mod_mac_y(uint_fast32_t, uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(86,10) mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (33,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (34,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (35,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (149,32) mod_mac2(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> EXTERN: generator/mod_arith_64bit.h:(40,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(41,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(42,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(43,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(44,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (149,77) mod_mac3(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> DELETED: generator/mod_arith_64bit.h:(49,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(50,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(51,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(52,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(53,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(54,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(55,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (150,22) mod_mac_y(uint_fast32_t, uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(86,10) mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (33,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (34,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (35,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (150,32) mod_mac3(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> DELETED: generator/mod_arith_64bit.h:(49,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(50,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(51,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(52,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(53,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(54,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(55,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (150,93) mod_mac2(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> EXTERN: generator/mod_arith_64bit.h:(40,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(41,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(42,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(43,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(44,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (151,22) mod_mac_y(uint_fast32_t, uint_fast32_t)
+    -> INLINE (MANUAL): generator/mod_arith_64bit.h:(86,10) mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+      -> EXTERN: (33,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (34,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> EXTERN: (35,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (151,32) mod_mac4(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> DELETED: generator/mod_arith_64bit.h:(60,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(61,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(62,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(63,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(64,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(65,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(66,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(67,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(68,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (151,109) mod_mul(uint_fast32_t, uint_fast32_t)
+    -> EXTERN: generator/mod_arith_64bit.h:(27,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(28,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (152,22) mod_mac2(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> EXTERN: generator/mod_arith_64bit.h:(40,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(41,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(42,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(43,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(44,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (152,31) mod_mac3(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+    -> DELETED: generator/mod_arith_64bit.h:(49,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(50,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(51,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(52,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(53,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(54,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: generator/mod_arith_64bit.h:(55,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+
+===========================================================================
+
+Begin optimization report for: xmalloc_large_ext(size_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (xmalloc_large_ext(size_t)) [7] xalloc.c(138,1)
+  -> EXTERN: (145,7) getenv(const char *)
+  -> EXTERN: (146,15) getenv(const char *)
+  -> EXTERN: (147,12) getenv(const char *)
+  -> EXTERN: (148,15) getenv(const char *)
+  -> EXTERN: (152,3) sprintf(char *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (156,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (157,5) abort(void)
+  -> EXTERN: (162,8) mkstemp(char *)
+  -> EXTERN: (164,5) perror(const char *)
+  -> EXTERN: (165,5) abort(void)
+  -> EXTERN: (167,7) unlink(const char *)
+  -> EXTERN: (168,5) perror(const char *)
+  -> EXTERN: (173,7) pwrite(int, const void *, size_t, __off64_t)
+  -> EXTERN: (174,5) perror(const char *)
+  -> EXTERN: (187,3) fcntl(int, int, ...)
+  -> EXTERN: (189,9) mmap(void *, size_t, int, int, int, __off64_t)
+  -> EXTERN: (192,5) perror(const char *)
+  -> EXTERN: (198,9) atexit(void (*)(void))
+  -> EXTERN: (199,7) perror(const char *)
+  -> EXTERN: (203,25) signal(int, __sighandler_t)
+  -> EXTERN: (205,7) perror(const char *)
+  -> EXTERN: (217,16) close(int)
+  -> EXTERN: (218,3) abort(void)
+
+===========================================================================
+
+Begin optimization report for: permute_vertex_labels(struct packed_edge *__restrict__, int64_t, int64_t, mrg_state *__restrict__, int64_t *__restrict__)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (permute_vertex_labels(struct packed_edge *__restrict__, int64_t, int64_t, mrg_state *__restrict__, int64_t *__restrict__)) [8] rmat.c(157,1)
+  -> INLINE: (164,3) randpermute_int64_t(int64_t *, int64_t, mrg_state *__restrict__)
+    -> INLINE: (150,1) release_i64(volatile int64_t *, int64_t)
+      -> EXTERN: (241,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE: (150,1) release_i64(volatile int64_t *, int64_t)
+      -> EXTERN: (241,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: (150,1) floor(double)
+    -> INLINE: (150,1) mrg_get_double_orig(mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(274,18) mrg_get_uint_orig(mrg_state *)
+        -> (268,3) mrg_orig_step(mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(275,18) mrg_get_uint_orig(mrg_state *)
+        -> (268,3) mrg_orig_step(mrg_state *)
+    -> INLINE: (150,1) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+      -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: (150,1) take_i64(volatile int64_t *)
+      -> EXTERN: (235,29) __sync_bool_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+    -> EXTERN: (150,1) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE: (150,1) take_i64(volatile int64_t *)
+      -> EXTERN: (235,29) __sync_bool_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+    -> EXTERN: (150,1) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE (MANUAL): (168,5) write_edge(packed_edge *, int64_t, int64_t)
+  -> INLINE (MANUAL): (169,25) get_v0_from_edge(const packed_edge *)
+  -> INLINE (MANUAL): (170,25) get_v1_from_edge(const packed_edge *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at rmat.c(161,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at rmat.c(161,3)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 3 
+   remark #15477: vector loop cost: 1.500 
+   remark #15478: estimated potential speedup: 1.920 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at rmat.c(161,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at rmat.c(167,3)
+<Multiversioned v1>
+   remark #25228: Loop multiversioned for Data Dependence
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15451: unmasked unaligned unit stride stores: 1 
+   remark #15458: masked indexed (or gather) loads: 2 
+   remark #15460: masked strided loads: 2 
+   remark #15462: unmasked indexed (or gather) loads: 2 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 15 
+   remark #15477: vector loop cost: 21.500 
+   remark #15478: estimated potential speedup: 0.690 
+   remark #15488: --- end vector loop cost summary ---
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at rmat.c(167,3)
+<Remainder, Multiversioned v1>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at rmat.c(167,3)
+<Multiversioned v2>
+   remark #15304: loop was not vectorized: non-vectorizable loop instance from multiversioning
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+LOOP BEGIN at rmat.c(167,3)
+<Remainder, Multiversioned v2>
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at rmat.c(150,1) inlined into rmat.c(164,3)
+   remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+   LOOP BEGIN at rmat.c(235,24) inlined into rmat.c(164,3)
+      remark #15529: loop was not vectorized: volatile assignment was not vectorized. Try using non-volatile assignment.   [ rmat.c(234,15) ]
+   LOOP END
+
+   LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(164,3)
+      remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at rmat.c(235,24) inlined into rmat.c(164,3)
+      remark #15529: loop was not vectorized: volatile assignment was not vectorized. Try using non-volatile assignment.   [ rmat.c(234,15) ]
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: permute_edgelist(struct packed_edge *__restrict__, int64_t, mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (permute_edgelist(struct packed_edge *__restrict__, int64_t, mrg_state *)) [9] rmat.c(175,1)
+  -> INLINE: (176,3) randpermute_packed_edge(struct packed_edge *, int64_t, mrg_state *__restrict__)
+    -> INLINE: (151,1) release_pe(volatile struct packed_edge *, struct packed_edge)
+      -> EXTERN: (261,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> INLINE (MANUAL): (261,3) get_v0_from_edge(const packed_edge *)
+      -> EXTERN: (263,10) ?1memcpy
+    -> INLINE: (151,1) release_pe(volatile struct packed_edge *, struct packed_edge)
+      -> EXTERN: (261,3) __assert_fail(const char *, const char *, unsigned int, const char *)
+      -> INLINE (MANUAL): (261,3) get_v0_from_edge(const packed_edge *)
+      -> EXTERN: (263,10) ?1memcpy
+    -> EXTERN: (151,1) floor(double)
+    -> INLINE: (151,1) mrg_get_double_orig(mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(274,18) mrg_get_uint_orig(mrg_state *)
+        -> (268,3) mrg_orig_step(mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(275,18) mrg_get_uint_orig(mrg_state *)
+        -> (268,3) mrg_orig_step(mrg_state *)
+    -> INLINE: (151,1) mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+      -> INLINE: generator/splittable_mrg.c:(191,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(195,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+      -> INLINE: generator/splittable_mrg.c:(199,19) mrg_step(const mrg_transition_matrix *, mrg_state *)
+        -> (165,3) mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)
+    -> INLINE: (151,1) take_pe(volatile struct packed_edge *)
+      -> INLINE (MANUAL): (251,11) get_v0_from_edge(const packed_edge *)
+      -> INLINE (MANUAL): (252,9) write_edge(packed_edge *, int64_t, int64_t)
+      -> INLINE (MANUAL): (254,12) get_v0_from_edge(const packed_edge *)
+    -> EXTERN: (151,1) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE: (151,1) take_pe(volatile struct packed_edge *)
+      -> INLINE (MANUAL): (251,11) get_v0_from_edge(const packed_edge *)
+      -> INLINE (MANUAL): (252,9) write_edge(packed_edge *, int64_t, int64_t)
+      -> INLINE (MANUAL): (254,12) get_v0_from_edge(const packed_edge *)
+    -> EXTERN: (151,1) __assert_fail(const char *, const char *, unsigned int, const char *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+rmat.c(249:5-249:5):OMP:permute_edgelist:  OpenMP multithreaded code generation for CRITICAL was successful
+rmat.c(255:3-255:3):OMP:permute_edgelist:  OpenMP multithreaded code generation for FLUSH was successful
+rmat.c(249:5-249:5):OMP:permute_edgelist:  OpenMP multithreaded code generation for CRITICAL was successful
+rmat.c(255:3-255:3):OMP:permute_edgelist:  OpenMP multithreaded code generation for FLUSH was successful
+rmat.c(262:3-262:3):OMP:permute_edgelist:  OpenMP multithreaded code generation for CRITICAL was successful
+rmat.c(264:5-264:5):OMP:permute_edgelist:  OpenMP multithreaded code generation for FLUSH was successful
+rmat.c(262:3-262:3):OMP:permute_edgelist:  OpenMP multithreaded code generation for CRITICAL was successful
+rmat.c(264:5-264:5):OMP:permute_edgelist:  OpenMP multithreaded code generation for FLUSH was successful
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at rmat.c(151,1) inlined into rmat.c(176,3)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+   LOOP BEGIN at rmat.c(254,37) inlined into rmat.c(176,3)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+   LOOP END
+
+   LOOP BEGIN at generator/splittable_mrg.c(193,3) inlined into rmat.c(176,3)
+      remark #15523: loop was not vectorized: loop control variable byte_index.169 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at rmat.c(254,37) inlined into rmat.c(176,3)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+rmat.c(263,10):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+rmat.c(263,10):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (16, 0), and destination (alignment, offset): (1, 0)
+rmat.c(263,10):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+rmat.c(263,10):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (16, 0), and destination (alignment, offset): (1, 0)
+===========================================================================
+
+Begin optimization report for: get_options(int, char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (get_options(int, char **)) [10] options.c(39,37)
+  -> EXTERN: (48,7) getenv(const char *)
+  -> EXTERN: (51,15) getopt(int, char *const *, const char *)
+  -> EXTERN: (51,15) getopt(int, char *const *, const char *)
+  -> EXTERN: (54,7) printf(const char *__restrict__, ...)
+  -> EXTERN: (55,7) exit(int)
+  -> EXTERN: (59,7) printf(const char *__restrict__, ...)
+  -> EXTERN: (105,7) exit(int)
+  -> EXTERN: (114,18) strdup(const char *)
+  -> EXTERN: (116,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (121,18) strdup(const char *)
+  -> EXTERN: (123,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (128,7) __errno_location(void)
+  -> EXTERN: (129,15) strtol(const char *__restrict__, char **__restrict__, int)
+  -> EXTERN: (130,11) __errno_location(void)
+  -> EXTERN: (131,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (135,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (140,7) __errno_location(void)
+  -> EXTERN: (141,20) strtol(const char *__restrict__, char **__restrict__, int)
+  -> EXTERN: (142,11) __errno_location(void)
+  -> EXTERN: (143,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (147,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (153,7) __errno_location(void)
+  -> EXTERN: (154,11) strtod(const char *__restrict__, char **__restrict__)
+  -> EXTERN: (156,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (159,11) __errno_location(void)
+  -> EXTERN: (160,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (164,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (172,7) __errno_location(void)
+  -> EXTERN: (173,11) strtod(const char *__restrict__, char **__restrict__)
+  -> EXTERN: (175,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (178,11) __errno_location(void)
+  -> EXTERN: (179,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (183,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (191,7) __errno_location(void)
+  -> EXTERN: (192,11) strtod(const char *__restrict__, char **__restrict__)
+  -> EXTERN: (194,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (197,11) __errno_location(void)
+  -> EXTERN: (198,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (202,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (210,7) __errno_location(void)
+  -> EXTERN: (211,11) strtod(const char *__restrict__, char **__restrict__)
+  -> EXTERN: (213,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (216,11) __errno_location(void)
+  -> EXTERN: (217,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (221,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (228,7) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (233,5) exit(int)
+  -> EXTERN: (249,7) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (250,7) abort(void)
+  -> EXTERN: (253,7) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (256,7) exit(int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at options.c(51,3)
+   remark #15535: loop was not vectorized: loop contains switch statement. Consider using if-else statement.   [ options.c(52,5) ]
+LOOP END
+===========================================================================
+
+Begin optimization report for: run_bfs(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (run_bfs(void)) [11] graph500.c(124,1)
+  -> EXTERN: (129,16) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> INLINE: (130,3) toc(void)
+    -> EXTERN: timer.c:(68,3) clock_gettime(clockid_t, struct timespec *)
+  -> (130,3) create_graph_from_edgelist(struct packed_edge *, int64_t)
+  -> INLINE: (130,3) tic(void)
+    -> EXTERN: timer.c:(43,3) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (131,16) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (133,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (134,5) exit(int)
+  -> (143,15) xmalloc_large(size_t)
+  -> INLINE (MANUAL): (150,22) get_v0_from_edge(const packed_edge *)
+  -> INLINE (MANUAL): (151,22) get_v1_from_edge(const packed_edge *)
+  -> INLINE: (161,18) mrg_get_double_orig(mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(274,18) mrg_get_uint_orig(mrg_state *)
+      -> (268,3) mrg_orig_step(mrg_state *)
+    -> INLINE: generator/splittable_mrg.c:(275,18) mrg_get_uint_orig(mrg_state *)
+      -> (268,3) mrg_orig_step(mrg_state *)
+  -> EXTERN: (167,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (171,2) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (172,2) exit(int)
+  -> INLINE: (176,5) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+  -> EXTERN: (180,15) open(const char *, int, ...)
+  -> EXTERN: (181,7) perror(const char *)
+  -> EXTERN: (182,7) exit(int)
+  -> EXTERN: (185,15) read(int, void *, size_t)
+  -> EXTERN: (186,7) perror(const char *)
+  -> EXTERN: (187,7) exit(int)
+  -> EXTERN: (189,5) close(int)
+  -> INLINE: (196,16) xmalloc_large(size_t)
+    -> EXTERN: xalloc.c:(88,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+    -> EXTERN: xalloc.c:(90,5) abort(void)
+    -> EXTERN: xalloc.c:(94,9) mmap(void *, size_t, int, int, int, __off64_t)
+    -> EXTERN: xalloc.c:(97,5) perror(const char *)
+    -> EXTERN: xalloc.c:(98,5) abort(void)
+  -> EXTERN: (197,5) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> EXTERN: (199,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> INLINE: (200,5) tic(void)
+    -> EXTERN: timer.c:(43,3) clock_gettime(clockid_t, struct timespec *)
+  -> (200,5) make_bfs_tree(int64_t *, int64_t *, int64_t)
+  -> INLINE: (200,5) toc(void)
+    -> EXTERN: timer.c:(68,3) clock_gettime(clockid_t, struct timespec *)
+  -> EXTERN: (201,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (204,7) perror(const char *)
+  -> EXTERN: (205,7) abort(void)
+  -> EXTERN: (208,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> (209,20) verify_bfs_tree(int64_t *, int64_t, int64_t, const struct packed_edge *, int64_t)
+  -> EXTERN: (210,18) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (212,7) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (214,7) abort(void)
+  -> INLINE: (217,5) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+  -> INLINE: (220,3) destroy_graph(void)
+    -> omp-csr/omp-csr.c:(439,3) free_graph(void)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+graph500.c(144:5-144:5):OMP:run_bfs:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into graph500.c(176,5)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(176,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(176,5)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(113,3) inlined into graph500.c(217,5)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(217,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into graph500.c(217,5)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at graph500.c(146,2)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at graph500.c(146,2)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 3 
+      remark #15477: vector loop cost: 1.500 
+      remark #15478: estimated potential speedup: 1.840 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=24
+   LOOP END
+
+   LOOP BEGIN at graph500.c(146,2)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=24
+   LOOP END
+LOOP END
+
+LOOP BEGIN at graph500.c(149,2)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between has_adj line 153 and has_adj line 153
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at graph500.c(149,2)
+<Remainder>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at graph500.c(160,5)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+LOOP BEGIN at graph500.c(192,3)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+graph500.c(147,4):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+graph500.c(147,4):remark #34026: call to memset implemented as a call to optimized library version
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: create_graph_from_edgelist(struct packed_edge *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (create_graph_from_edgelist(struct packed_edge *, int64_t)) [12] omp-csr/omp-csr.c(235,1)
+  -> INLINE: (236,3) find_nv(const struct packed_edge *__restrict__, const int64_t)
+    -> INLINE (MANUAL): (49,6) get_v0_from_edge(const packed_edge *)
+    -> INLINE (MANUAL): (50,14) get_v0_from_edge(const packed_edge *)
+    -> INLINE (MANUAL): (51,6) get_v1_from_edge(const packed_edge *)
+    -> INLINE (MANUAL): (52,14) get_v1_from_edge(const packed_edge *)
+    -> INLINE: (56,17) int64_casval(int64_t *, int64_t, int64_t)
+      -> EXTERN: (452,10) __sync_val_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+  -> INLINE: (237,7) alloc_graph(int64_t)
+    -> (65,10) xmalloc_large_ext(size_t)
+  -> (238,7) setup_deg_off(const struct packed_edge *__restrict__, int64_t)
+  -> INLINE: (239,5) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+  -> INLINE: (242,3) gather_edges(const struct packed_edge *__restrict__, int64_t)
+    -> INLINE (MANUAL): (221,14) get_v0_from_edge(const packed_edge *)
+    -> INLINE (MANUAL): (222,14) get_v1_from_edge(const packed_edge *)
+    -> INLINE: (224,4) scatter_edge(const int64_t, const int64_t)
+      -> INLINE: (173,11) int64_fetch_add(int64_t *, int64_t)
+        -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+    -> INLINE: (225,4) scatter_edge(const int64_t, const int64_t)
+      -> INLINE: (173,11) int64_fetch_add(int64_t *, int64_t)
+        -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+    -> INLINE: (229,5) pack_edges(void)
+      -> INLINE: (210,7) pack_vtx_edges(const int64_t)
+        -> EXTERN: (192,3) qsort(void *, size_t, size_t, __compar_fn_t)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+omp-csr/omp-csr.c(44:3-44:3):OMP:create_graph_from_edgelist:  OpenMP DEFINED REGION WAS PARALLELIZED
+omp-csr/omp-csr.c(216:3-216:3):OMP:create_graph_from_edgelist:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into omp-csr/omp-csr.c(239,5)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(239,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(239,5)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(48,7) inlined into omp-csr/omp-csr.c(236,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between tmaxvtx.1005 line 51 and tmaxvtx.1005 line 51
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(48,7) inlined into omp-csr/omp-csr.c(236,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(220,7) inlined into omp-csr/omp-csr.c(242,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:__sync_fetch_and_add_8(vola line 447 and call:__sync_fetch_and_add_8(vola line 447
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(209,5) inlined into omp-csr/omp-csr.c(242,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at omp-csr/omp-csr.c(194,3) inlined into omp-csr/omp-csr.c(242,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between xadj line 196 and xadj line 196
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(194,3) inlined into omp-csr/omp-csr.c(242,3)
+   <Remainder>
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(198,3) inlined into omp-csr/omp-csr.c(242,3)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(198,3) inlined into omp-csr/omp-csr.c(242,3)
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 3 
+      remark #15477: vector loop cost: 1.500 
+      remark #15478: estimated potential speedup: 1.930 
+      remark #15488: --- end vector loop cost summary ---
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(198,3) inlined into omp-csr/omp-csr.c(242,3)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at omp-csr/omp-csr.c(55,5) inlined into omp-csr/omp-csr.c(236,3)
+   remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: setup_deg_off(const struct packed_edge *__restrict__, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (setup_deg_off(const struct packed_edge *__restrict__, int64_t)) [13] omp-csr/omp-csr.c(117,1)
+  -> INLINE (MANUAL): (128,14) get_v0_from_edge(const packed_edge *)
+  -> INLINE (MANUAL): (129,14) get_v1_from_edge(const packed_edge *)
+  -> EXTERN: (140,13) __builtin_alloca(unsigned long)
+  -> EXTERN: (140,13) omp_get_num_threads(void)
+  -> EXTERN: (142,2) perror(const char *)
+  -> EXTERN: (143,2) abort(void)
+  -> INLINE: (150,13) prefix_sum(int64_t *)
+    -> EXTERN: (86,8) omp_get_num_threads(void)
+    -> EXTERN: (87,9) omp_get_thread_num(void)
+  -> (157,25) xmalloc_large_ext(size_t)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+omp-csr/omp-csr.c(133:8-133:8):OMP:setup_deg_off:  OpenMP multithreaded code generation for ATOMIC was successful
+omp-csr/omp-csr.c(136:8-136:8):OMP:setup_deg_off:  OpenMP multithreaded code generation for ATOMIC was successful
+omp-csr/omp-csr.c(97:3-97:3):OMP:setup_deg_off:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(110:3-110:3):OMP:setup_deg_off:  OpenMP multithreaded code generation for FLUSH was successful
+omp-csr/omp-csr.c(111:3-111:3):OMP:setup_deg_off:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(139:5-139:5):OMP:setup_deg_off:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(98:3-98:3):OMP:setup_deg_off:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(155:5-155:5):OMP:setup_deg_off:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(121:3-121:3):OMP:setup_deg_off:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at omp-csr/omp-csr.c(124,7)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at omp-csr/omp-csr.c(124,7)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 3 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 0.920 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(124,7)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(147,7)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15460: masked strided loads: 1 
+   remark #15462: unmasked indexed (or gather) loads: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 10 
+   remark #15477: vector loop cost: 5.000 
+   remark #15478: estimated potential speedup: 1.970 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(147,7)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(95,3) inlined into omp-csr/omp-csr.c(150,13)
+   remark #25085: Preprocess Loopnests: Moving Out Load and Store    [ omp-csr/omp-csr.c(96,5) ]
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15460: masked strided loads: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 4 
+   remark #15477: vector loop cost: 3.500 
+   remark #15478: estimated potential speedup: 1.120 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(95,3) inlined into omp-csr/omp-csr.c(150,13)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(99,5) inlined into omp-csr/omp-csr.c(150,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between buf_1021 line 100 and buf_1021 line 100
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(99,5) inlined into omp-csr/omp-csr.c(150,13)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(105,3) inlined into omp-csr/omp-csr.c(150,13)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between t1.1021 line 108 and t1.1021 line 107
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(105,3) inlined into omp-csr/omp-csr.c(150,13)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(153,7)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15460: masked strided loads: 1 
+   remark #15462: unmasked indexed (or gather) loads: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 7 
+   remark #15477: vector loop cost: 4.000 
+   remark #15478: estimated potential speedup: 1.750 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(153,7)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(161,2)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(161,2)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 3 
+   remark #15477: vector loop cost: 1.500 
+   remark #15478: estimated potential speedup: 1.930 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(161,2)
+<Remainder loop for vectorization>
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at omp-csr/omp-csr.c(127,7)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ omp-csr/omp-csr.c(133,10) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+omp-csr/omp-csr.c(125,2):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/omp-csr.c(125,2):remark #34026: call to memset implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: verify_bfs_tree(int64_t *, int64_t, int64_t, const struct packed_edge *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (verify_bfs_tree(int64_t *, int64_t, int64_t, const struct packed_edge *, int64_t)) [14] verify.c(82,1)
+  -> (101,15) xmalloc_large(size_t)
+  -> INLINE: (104,9) compute_levels(int64_t *, int64_t, const int64_t *__restrict__, int64_t)
+    -> EXTERN: (39,6) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: (52,8) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: (56,6) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> EXTERN: (64,8) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE: (174,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+verify.c(72:26-72:26):OMP:verify_bfs_tree:  OpenMP multithreaded code generation for FLUSH was successful
+verify.c(126:26-126:26):OMP:verify_bfs_tree:  OpenMP multithreaded code generation for FLUSH was successful
+verify.c(133:26-133:26):OMP:verify_bfs_tree:  OpenMP multithreaded code generation for FLUSH was successful
+verify.c(154:26-154:26):OMP:verify_bfs_tree:  OpenMP multithreaded code generation for FLUSH was successful
+verify.c(167:30-167:30):OMP:verify_bfs_tree:  OpenMP multithreaded code generation for FLUSH was successful
+verify.c(22:3-22:3):OMP:verify_bfs_tree:  OpenMP DEFINED REGION WAS PARALLELIZED
+verify.c(108:3-108:3):OMP:verify_bfs_tree:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into verify.c(174,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into verify.c(174,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into verify.c(174,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at verify.c(27,7) inlined into verify.c(104,9)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at verify.c(27,7) inlined into verify.c(104,9)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 20 
+   remark #15477: vector loop cost: 8.000 
+   remark #15478: estimated potential speedup: 2.430 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at verify.c(27,7) inlined into verify.c(104,9)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at verify.c(112,7)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at verify.c(112,7)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 3 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 0.920 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+
+   LOOP BEGIN at verify.c(112,7)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at verify.c(31,7) inlined into verify.c(104,9)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+   LOOP BEGIN at verify.c(38,4) inlined into verify.c(104,9)
+      remark #15523: loop was not vectorized: loop control variable nhop.1009 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at verify.c(51,6) inlined into verify.c(104,9)
+      remark #15523: loop was not vectorized: loop control variable nhop.1009 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at verify.c(63,6) inlined into verify.c(104,9)
+      remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+   LOOP END
+LOOP END
+
+LOOP BEGIN at verify.c(117,7)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ verify.c(126,26) ]
+LOOP END
+
+LOOP BEGIN at verify.c(160,2)
+   remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ verify.c(167,30) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+verify.c(113,2):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+verify.c(113,2):remark #34026: call to memset implemented as a call to optimized library version
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: xmalloc_large(size_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (xmalloc_large(size_t)) [15] xalloc.c(83,1)
+  -> EXTERN: (88,5) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (90,5) abort(void)
+  -> EXTERN: (94,9) mmap(void *, size_t, int, int, int, __off64_t)
+  -> EXTERN: (97,5) perror(const char *)
+  -> EXTERN: (98,5) abort(void)
+
+===========================================================================
+
+Begin optimization report for: make_bfs_tree(int64_t *, int64_t *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (make_bfs_tree(int64_t *, int64_t *, int64_t)) [16] omp-csr/omp-csr.c(367,1)
+  -> (376,11) xmalloc_large(size_t)
+  -> INLINE (MANUAL): (384,3) bm_init(bitmap_t *, int)
+    -> EXTERN: omp-csr/bitmap.h:(37,27) malloc(size_t)
+    -> INLINE (MANUAL): omp-csr/bitmap.h:(39,3) bm_reset(bitmap_t *)
+  -> INLINE (MANUAL): (385,3) bm_init(bitmap_t *, int)
+    -> EXTERN: omp-csr/bitmap.h:(37,27) malloc(size_t)
+    -> INLINE (MANUAL): omp-csr/bitmap.h:(39,3) bm_reset(bitmap_t *)
+  -> INLINE: (406,2) bfs_top_down_step(int64_t *, int64_t *, int64_t *, int64_t *, int64_t *)
+    -> INLINE: (337,8) int64_cas(int64_t *, int64_t, int64_t)
+      -> EXTERN: (457,10) __sync_bool_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+    -> INLINE: (341,23) int64_fetch_add(int64_t *, int64_t)
+      -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+    -> EXTERN: (342,8) __assert_fail(const char *, const char *, unsigned int, const char *)
+    -> INLINE: (353,20) int64_fetch_add(int64_t *, int64_t)
+      -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+    -> EXTERN: (354,5) __assert_fail(const char *, const char *, unsigned int, const char *)
+  -> INLINE: (411,8) fill_bitmap_from_queue(bitmap_t *, int64_t *, int64_t, int64_t)
+    -> INLINE (MANUAL): (251,7) bm_set_bit_atomic(bitmap_t *, long)
+      -> INLINE: omp-csr/bitmap.h:(93,12) int64_cas(int64_t *, int64_t, int64_t)
+        -> EXTERN: omp-csr/omp-csr.c:(457,10) __sync_bool_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+  -> INLINE: (413,24) bfs_bottom_up_step(int64_t *, bitmap_t *, bitmap_t *)
+    -> INLINE (MANUAL): (296,5) bm_swap(bitmap_t *, bitmap_t *)
+    -> INLINE (MANUAL): (299,3) bm_reset(bitmap_t *)
+    -> INLINE (MANUAL): (309,8) bm_get_bit(bitmap_t *, long)
+    -> INLINE (MANUAL): (312,6) bm_set_bit_atomic(bitmap_t *, long)
+      -> INLINE: omp-csr/bitmap.h:(93,12) int64_cas(int64_t *, int64_t, int64_t)
+        -> EXTERN: omp-csr/omp-csr.c:(457,10) __sync_bool_compare_and_swap_8(volatile void *, unsigned long, unsigned long)
+  -> INLINE: (415,8) fill_queue_from_bitmap(bitmap_t *, int64_t *, int64_t *, int64_t *, int64_t *)
+    -> EXTERN: (263,36) omp_get_num_threads(void)
+    -> EXTERN: (264,5) omp_get_num_threads(void)
+    -> EXTERN: (265,34) omp_get_thread_num(void)
+    -> INLINE (MANUAL): (271,9) bm_get_bit(bitmap_t *, long)
+    -> INLINE (MANUAL): (273,9) bm_get_next_bit(bitmap_t *, long)
+    -> INLINE (MANUAL): (276,11) bm_get_next_bit(bitmap_t *, long)
+    -> INLINE: (278,14) int64_fetch_add(int64_t *, int64_t)
+      -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+    -> INLINE: (286,15) int64_fetch_add(int64_t *, int64_t)
+      -> EXTERN: (447,10) __sync_fetch_and_add_8(volatile void *, unsigned long)
+  -> INLINE (MANUAL): (429,3) bm_free(bitmap_t *)
+    -> EXTERN: omp-csr/bitmap.h:(110,3) free(void *)
+  -> INLINE (MANUAL): (430,3) bm_free(bitmap_t *)
+    -> EXTERN: omp-csr/bitmap.h:(110,3) free(void *)
+  -> INLINE: (431,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+omp-csr/omp-csr.c(328:3-328:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(360:3-360:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(298:3-298:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(303:3-303:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(319:3-319:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(262:3-262:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(416:8-416:8):OMP:make_bfs_tree:  OpenMP multithreaded code generation for BARRIER was successful
+omp-csr/omp-csr.c(358:3-358:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(295:3-295:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(301:3-301:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(258:3-258:3):OMP:make_bfs_tree:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(419:7-419:7):OMP:make_bfs_tree:  OpenMP multithreaded code generation for SINGLE was successful
+omp-csr/omp-csr.c(390:3-390:3):OMP:make_bfs_tree:  OpenMP DEFINED REGION WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(384,3)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(384,3)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 2 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 0.610 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(384,3)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(385,3)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(385,3)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 2 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 0.610 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(385,3)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+LOOP END
+
+LOOP BEGIN at xalloc.c(113,3) inlined into omp-csr/omp-csr.c(431,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(431,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(431,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(397,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(397,7)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 3 
+   remark #15477: vector loop cost: 1.500 
+   remark #15478: estimated potential speedup: 1.930 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(397,7)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(400,7)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(400,7)
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 3 
+   remark #15477: vector loop cost: 1.500 
+   remark #15478: estimated potential speedup: 1.930 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(400,7)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(343,8) inlined into omp-csr/omp-csr.c(406,2)
+   remark #25401: memcopy(with guard) generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at omp-csr/omp-csr.c(343,8) inlined into omp-csr/omp-csr.c(406,2)
+   <Peeled loop for vectorization, Multiversioned v2>
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(343,8) inlined into omp-csr/omp-csr.c(406,2)
+   <Multiversioned v2>
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 7 
+      remark #15477: vector loop cost: 2.000 
+      remark #15478: estimated potential speedup: 3.490 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25015: Estimate of max trip count of loop=8192
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(343,8) inlined into omp-csr/omp-csr.c(406,2)
+   <Remainder loop for vectorization, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(355,5) inlined into omp-csr/omp-csr.c(406,2)
+   remark #25401: memcopy(with guard) generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+   remark #25015: Estimate of max trip count of loop=16384
+
+   LOOP BEGIN at omp-csr/omp-csr.c(355,5) inlined into omp-csr/omp-csr.c(406,2)
+   <Peeled loop for vectorization, Multiversioned v2>
+      remark #25015: Estimate of max trip count of loop=16384
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(355,5) inlined into omp-csr/omp-csr.c(406,2)
+   <Multiversioned v2>
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 7 
+      remark #15477: vector loop cost: 2.000 
+      remark #15478: estimated potential speedup: 3.490 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25015: Estimate of max trip count of loop=8192
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(355,5) inlined into omp-csr/omp-csr.c(406,2)
+   <Remainder loop for vectorization, Multiversioned v2>
+      remark #25015: Estimate of max trip count of loop=16384
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(413,24)
+   remark #25408: memset generated
+   remark #15541: outer loop was not auto-vectorized: consider using SIMD directive
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(413,24)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 2 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 0.610 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25439: unrolled with remainder by 2  
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+
+   LOOP BEGIN at omp-csr/bitmap.h(29,5) inlined into omp-csr/omp-csr.c(413,24)
+   <Remainder>
+      remark #25015: Estimate of max trip count of loop=12
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(279,2) inlined into omp-csr/omp-csr.c(415,8)
+   remark #25401: memcopy(with guard) generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at omp-csr/omp-csr.c(279,2) inlined into omp-csr/omp-csr.c(415,8)
+   <Peeled loop for vectorization, Multiversioned v2>
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(279,2) inlined into omp-csr/omp-csr.c(415,8)
+   <Multiversioned v2>
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 7 
+      remark #15477: vector loop cost: 2.000 
+      remark #15478: estimated potential speedup: 3.490 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25015: Estimate of max trip count of loop=8192
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(279,2) inlined into omp-csr/omp-csr.c(415,8)
+   <Remainder loop for vectorization, Multiversioned v2>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(287,3) inlined into omp-csr/omp-csr.c(415,8)
+   remark #25401: memcopy(with guard) generated
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+   remark #25015: Estimate of max trip count of loop=16384
+
+   LOOP BEGIN at omp-csr/omp-csr.c(287,3) inlined into omp-csr/omp-csr.c(415,8)
+   <Peeled loop for vectorization, Multiversioned v2>
+      remark #25015: Estimate of max trip count of loop=16384
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(287,3) inlined into omp-csr/omp-csr.c(415,8)
+   <Multiversioned v2>
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 1 
+      remark #15450: unmasked unaligned unit stride loads: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 7 
+      remark #15477: vector loop cost: 2.000 
+      remark #15478: estimated potential speedup: 3.490 
+      remark #15488: --- end vector loop cost summary ---
+      remark #25015: Estimate of max trip count of loop=8192
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(287,3) inlined into omp-csr/omp-csr.c(415,8)
+   <Remainder loop for vectorization, Multiversioned v2>
+      remark #25015: Estimate of max trip count of loop=16384
+   LOOP END
+LOOP END
+
+LOOP BEGIN at omp-csr/omp-csr.c(421,7)
+   remark #25084: Preprocess Loopnests: Moving Out Store    [ omp-csr/omp-csr.c(424,4) ]
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15458: masked indexed (or gather) loads: 2 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 11 
+   remark #15477: vector loop cost: 15.000 
+   remark #15478: estimated potential speedup: 0.720 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at omp-csr/omp-csr.c(403,5)
+   remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+   LOOP BEGIN at omp-csr/omp-csr.c(330,5) inlined into omp-csr/omp-csr.c(406,2)
+      remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+      LOOP BEGIN at omp-csr/omp-csr.c(334,7) inlined into omp-csr/omp-csr.c(406,2)
+         remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(250,5) inlined into omp-csr/omp-csr.c(411,8)
+      remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+      LOOP BEGIN at omp-csr/bitmap.h(93,12) inlined into omp-csr/omp-csr.c(411,8)
+         remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(414,32)
+      remark #15543: loop was not vectorized: loop with function call not considered an optimization candidate.   [ omp-csr/omp-csr.c(295,3) ]
+
+      LOOP BEGIN at omp-csr/omp-csr.c(305,5) inlined into omp-csr/omp-csr.c(413,24)
+         remark #15536: loop was not vectorized: inner loop throttling prevents vectorization of this outer loop. Refer to inner loop message for more details.
+
+         LOOP BEGIN at omp-csr/omp-csr.c(307,2) inlined into omp-csr/omp-csr.c(413,24)
+            remark #15341: loop was not vectorized: nonstandard loop is not a vectorization candidate
+         LOOP END
+
+         LOOP BEGIN at omp-csr/bitmap.h(93,12) inlined into omp-csr/omp-csr.c(413,24)
+            remark #15521: loop was not vectorized: loop control variable was not identified. Explicitly compute the iteration count before executing the loop or try using canonical loop form
+         LOOP END
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at omp-csr/bitmap.h(62,5) inlined into omp-csr/omp-csr.c(415,8)
+      remark #15523: loop was not vectorized: loop control variable it.984 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at omp-csr/bitmap.h(72,3) inlined into omp-csr/omp-csr.c(415,8)
+      remark #15523: loop was not vectorized: loop control variable next.984 was found, but loop iteration count cannot be computed before executing the loop
+   LOOP END
+
+   LOOP BEGIN at omp-csr/omp-csr.c(274,5) inlined into omp-csr/omp-csr.c(415,8)
+      remark #15532: loop was not vectorized: compile time constraints prevent loop optimization. Consider using -O3.
+
+      LOOP BEGIN at omp-csr/bitmap.h(62,5) inlined into omp-csr/omp-csr.c(415,8)
+         remark #15523: loop was not vectorized: loop control variable it.984 was found, but loop iteration count cannot be computed before executing the loop
+      LOOP END
+
+      LOOP BEGIN at omp-csr/bitmap.h(72,3) inlined into omp-csr/omp-csr.c(415,8)
+         remark #15523: loop was not vectorized: loop control variable next.984 was found, but loop iteration count cannot be computed before executing the loop
+      LOOP END
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+omp-csr/omp-csr.c(356,7):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/omp-csr.c(356,7):remark #34026: call to memcpy implemented as a call to optimized library version
+omp-csr/bitmap.h(30,8):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/bitmap.h(30,8):remark #34026: call to memset implemented as a call to optimized library version
+omp-csr/omp-csr.c(288,5):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/omp-csr.c(288,5):remark #34026: call to memcpy implemented as a call to optimized library version
+omp-csr/bitmap.h(30,8):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/bitmap.h(30,8):remark #34026: call to memset implemented as a call to optimized library version
+omp-csr/bitmap.h(30,8):remark #34014: optimization advice for memset: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/bitmap.h(30,8):remark #34026: call to memset implemented as a call to optimized library version
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+omp-csr/omp-csr.c(344,3):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/omp-csr.c(344,3):remark #34026: call to memcpy implemented as a call to optimized library version
+omp-csr/omp-csr.c(280,4):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+omp-csr/omp-csr.c(280,4):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: free_graph(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (free_graph(void)) [17] omp-csr/omp-csr.c(72,1)
+  -> INLINE: (73,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+  -> INLINE: (74,3) xfree_large(void *)
+    -> EXTERN: xalloc.c:(115,7) munmap(void *, size_t)
+    -> EXTERN: xalloc.c:(118,2) close(int)
+    -> EXTERN: xalloc.c:(130,5) free(void *)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(113,3) inlined into omp-csr/omp-csr.c(73,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(73,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(73,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(113,3) inlined into omp-csr/omp-csr.c(74,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(74,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between large_alloc line 128 and large_alloc line 128
+   remark #25439: unrolled with remainder by 2  
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+LOOP BEGIN at xalloc.c(127,5) inlined into omp-csr/omp-csr.c(74,3)
+<Remainder>
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to increase the width of loads
+xalloc.c(128,24):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to increase the width of stores
+xalloc.c(128,24):remark #34000: call to memcpy implemented inline with loads and stores with proven source (alignment, offset): (8, 0), and destination (alignment, offset): (8, 0)
+===========================================================================
+
+Begin optimization report for: output_results(const int64_t, int64_t, int64_t, const double, const double, const double, const double, const double, const double, const int, const double *, const int64_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (output_results(const int64_t, int64_t, int64_t, const double, const double, const double, const double, const double, const double, const int, const double *, const int64_t *)) [18] graph500.c(324,1)
+  -> EXTERN: (330,8) __builtin_alloca(unsigned long)
+  -> EXTERN: (331,11) __builtin_alloca(unsigned long)
+  -> EXTERN: (333,5) perror(const char *)
+  -> EXTERN: (334,5) abort(void)
+  -> EXTERN: (338,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (341,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (342,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (343,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (344,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (346,3) memcpy(void *__restrict__, const void *__restrict__, size_t)
+  -> (347,3) statistics(double *, double *, int64_t)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (348,3) printf(const char *__restrict__, ...)
+  -> (352,3) statistics(double *, double *, int64_t)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (353,3) printf(const char *__restrict__, ...)
+  -> (357,3) statistics(double *, double *, int64_t)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+  -> EXTERN: (358,3) printf(const char *__restrict__, ...)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at graph500.c(350,3)
+   remark #15410: vectorization support: conversion from int to float will be emulated   [ graph500.c(351,13) ]
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 8 
+   remark #15477: vector loop cost: 4.750 
+   remark #15478: estimated potential speedup: 1.630 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at graph500.c(350,3)
+<Remainder loop for vectorization>
+   remark #15410: vectorization support: conversion from int to float will be emulated   [ graph500.c(351,13) ]
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at graph500.c(350,3)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at graph500.c(355,3)
+   remark #15410: vectorization support: conversion from int to float will be emulated   [ graph500.c(356,13) ]
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15449: unmasked aligned unit stride stores: 1 
+   remark #15450: unmasked unaligned unit stride loads: 2 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 35 
+   remark #15477: vector loop cost: 14.250 
+   remark #15478: estimated potential speedup: 2.310 
+   remark #15487: type converts: 1 
+   remark #15488: --- end vector loop cost summary ---
+LOOP END
+
+LOOP BEGIN at graph500.c(355,3)
+<Remainder loop for vectorization>
+   remark #15410: vectorization support: conversion from int to float will be emulated   [ graph500.c(356,13) ]
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at graph500.c(355,3)
+<Remainder loop for vectorization>
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+graph500.c(346,3):remark #34014: optimization advice for memcpy: increase the destination's alignment to 16 (and use __assume_aligned) to speed up library implementation
+graph500.c(346,3):remark #34014: optimization advice for memcpy: increase the source's alignment to 16 (and use __assume_aligned) to speed up library implementation
+graph500.c(346,3):remark #34026: call to memcpy implemented as a call to optimized library version
+===========================================================================
+
+Begin optimization report for: statistics(double *, double *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (statistics(double *, double *, int64_t)) [19] graph500.c(256,1)
+  -> EXTERN: (262,3) qsort(void *, size_t, size_t, __compar_fn_t)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at graph500.c(285,3)
+   remark #25453: Loop Reversed
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ graph500.c(286,5) ]
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   remark #25457: Number of partial sums replaced: 1
+LOOP END
+
+LOOP BEGIN at graph500.c(285,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at graph500.c(291,3)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ graph500.c(292,35) ]
+   remark #25439: unrolled with remainder by 2  
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+   remark #25457: Number of partial sums replaced: 1
+LOOP END
+
+LOOP BEGIN at graph500.c(291,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at graph500.c(298,3)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ graph500.c(299,11) ]
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at graph500.c(298,3)
+<Remainder>
+LOOP END
+
+LOOP BEGIN at graph500.c(310,3)
+   remark #15310: loop was not vectorized: operation cannot be vectorized   [ graph500.c(311,24) ]
+   remark #25439: unrolled with remainder by 2  
+LOOP END
+
+LOOP BEGIN at graph500.c(310,3)
+<Remainder>
+LOOP END
+===========================================================================
+
+Begin optimization report for: get_v0_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v0_from_edge(const packed_edge *)) omp-csr/../generator/graph_generator.h(56,62)
+
+===========================================================================
+
+Begin optimization report for: get_v1_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v1_from_edge(const packed_edge *)) omp-csr/../generator/graph_generator.h(60,62)
+
+===========================================================================
+
+Begin optimization report for: xfree_large(void *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (xfree_large(void *)) xalloc.c(110,1)
+
+===========================================================================
+
+Begin optimization report for: bm_free(bitmap_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_free(bitmap_t *)) omp-csr/bitmap.h(109,1)
+
+===========================================================================
+
+Begin optimization report for: find_nv(const struct packed_edge *__restrict__, const int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (find_nv(const struct packed_edge *__restrict__, const int64_t)) omp-csr/omp-csr.c(42,1)
+
+===========================================================================
+
+Begin optimization report for: int64_casval(int64_t *, int64_t, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (int64_casval(int64_t *, int64_t, int64_t)) omp-csr/omp-csr.c(451,1)
+
+===========================================================================
+
+Begin optimization report for: alloc_graph(int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (alloc_graph(int64_t)) omp-csr/omp-csr.c(63,1)
+
+===========================================================================
+
+Begin optimization report for: prefix_sum(int64_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (prefix_sum(int64_t *)) omp-csr/omp-csr.c(82,1)
+
+===========================================================================
+
+Begin optimization report for: i64cmp(const void *, const void *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (i64cmp(const void *, const void *)) [28] omp-csr/omp-csr.c(179,1)
+
+===========================================================================
+
+Begin optimization report for: pack_vtx_edges(const int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (pack_vtx_edges(const int64_t)) omp-csr/omp-csr.c(189,1)
+
+===========================================================================
+
+Begin optimization report for: gather_edges(const struct packed_edge *__restrict__, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (gather_edges(const struct packed_edge *__restrict__, int64_t)) omp-csr/omp-csr.c(215,1)
+
+===========================================================================
+
+Begin optimization report for: scatter_edge(const int64_t, const int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (scatter_edge(const int64_t, const int64_t)) omp-csr/omp-csr.c(171,1)
+
+===========================================================================
+
+Begin optimization report for: pack_edges(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (pack_edges(void)) omp-csr/omp-csr.c(205,1)
+
+===========================================================================
+
+Begin optimization report for: fill_bitmap_from_queue(bitmap_t *, int64_t *, int64_t, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (fill_bitmap_from_queue(bitmap_t *, int64_t *, int64_t, int64_t)) omp-csr/omp-csr.c(248,1)
+
+===========================================================================
+
+Begin optimization report for: bm_set_bit_atomic(bitmap_t *, long)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_set_bit_atomic(bitmap_t *, long)) omp-csr/bitmap.h(87,1)
+
+===========================================================================
+
+Begin optimization report for: fill_queue_from_bitmap(bitmap_t *, int64_t *, int64_t *, int64_t *, int64_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (fill_queue_from_bitmap(bitmap_t *, int64_t *, int64_t *, int64_t *, int64_t *)) omp-csr/omp-csr.c(257,1)
+
+===========================================================================
+
+Begin optimization report for: bm_get_next_bit(bitmap_t *, long)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_get_next_bit(bitmap_t *, long)) omp-csr/bitmap.h(50,1)
+
+===========================================================================
+
+Begin optimization report for: int64_fetch_add(int64_t *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (int64_fetch_add(int64_t *, int64_t)) omp-csr/omp-csr.c(446,1)
+
+===========================================================================
+
+Begin optimization report for: bfs_bottom_up_step(int64_t *, bitmap_t *, bitmap_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bfs_bottom_up_step(int64_t *, bitmap_t *, bitmap_t *)) omp-csr/omp-csr.c(294,1)
+
+===========================================================================
+
+Begin optimization report for: bm_get_bit(bitmap_t *, long)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_get_bit(bitmap_t *, long)) omp-csr/bitmap.h(44,1)
+
+===========================================================================
+
+Begin optimization report for: bm_swap(bitmap_t *, bitmap_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_swap(bitmap_t *, bitmap_t *)) omp-csr/bitmap.h(97,1)
+
+===========================================================================
+
+Begin optimization report for: bm_reset(bitmap_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_reset(bitmap_t *)) omp-csr/bitmap.h(27,1)
+
+===========================================================================
+
+Begin optimization report for: bfs_top_down_step(int64_t *, int64_t *, int64_t *, int64_t *, int64_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bfs_top_down_step(int64_t *, int64_t *, int64_t *, int64_t *, int64_t *)) omp-csr/omp-csr.c(325,1)
+
+===========================================================================
+
+Begin optimization report for: int64_cas(int64_t *, int64_t, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (int64_cas(int64_t *, int64_t, int64_t)) omp-csr/omp-csr.c(456,1)
+
+===========================================================================
+
+Begin optimization report for: destroy_graph(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (destroy_graph(void)) omp-csr/omp-csr.c(438,1)
+
+===========================================================================
+
+Begin optimization report for: get_v0_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v0_from_edge(const packed_edge *)) generator/graph_generator.h(56,62)
+
+===========================================================================
+
+Begin optimization report for: get_v1_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v1_from_edge(const packed_edge *)) generator/graph_generator.h(60,62)
+
+===========================================================================
+
+Begin optimization report for: tic(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (tic(void)) timer.c(36,1)
+
+===========================================================================
+
+Begin optimization report for: toc(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (toc(void)) timer.c(49,1)
+
+===========================================================================
+
+Begin optimization report for: make_graph(int, int64_t, uint64_t, uint64_t, int64_t *, packed_edge **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (make_graph(int, int64_t, uint64_t, uint64_t, int64_t *, packed_edge **)) generator/make_graph.c(42,139)
+
+===========================================================================
+
+Begin optimization report for: make_mrg_seed(uint64_t, uint64_t, uint_fast32_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (make_mrg_seed(uint64_t, uint64_t, uint_fast32_t *)) generator/utils.c(51,81)
+
+===========================================================================
+
+Begin optimization report for: xmalloc(size_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (xmalloc(size_t)) generator/utils.c(31,25)
+
+===========================================================================
+
+Begin optimization report for: dcmp(const void *, const void *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (dcmp(const void *, const void *)) [53] graph500.c(243,1)
+  -> EXTERN: (249,3) fprintf(FILE *__restrict__, const char *__restrict__, ...)
+  -> EXTERN: (250,3) abort(void)
+
+===========================================================================
+
+Begin optimization report for: mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)) generator/splittable_mrg.c(186,124)
+
+===========================================================================
+
+Begin optimization report for: mrg_step(const mrg_transition_matrix *, mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_step(const mrg_transition_matrix *, mrg_state *)) generator/splittable_mrg.c(164,74)
+
+===========================================================================
+
+Begin optimization report for: get_v0_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v0_from_edge(const packed_edge *)) generator/graph_generator.h(56,62)
+
+===========================================================================
+
+Begin optimization report for: get_v1_from_edge(const packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (get_v1_from_edge(const packed_edge *)) generator/graph_generator.h(60,62)
+
+===========================================================================
+
+Begin optimization report for: rmat_edge(struct packed_edge *, int, double, double, double, double, const double *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (rmat_edge(struct packed_edge *, int, double, double, double, double, const double *)) rmat.c(40,1)
+
+===========================================================================
+
+Begin optimization report for: randpermute_int64_t(int64_t *, int64_t, mrg_state *__restrict__)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (randpermute_int64_t(int64_t *, int64_t, mrg_state *__restrict__)) rmat.c(150,1)
+
+===========================================================================
+
+Begin optimization report for: take_i64(volatile int64_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (take_i64(volatile int64_t *)) rmat.c(230,1)
+
+===========================================================================
+
+Begin optimization report for: release_i64(volatile int64_t *, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (release_i64(volatile int64_t *, int64_t)) rmat.c(240,1)
+
+===========================================================================
+
+Begin optimization report for: mrg_get_double_orig(mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_get_double_orig(mrg_state *)) generator/splittable_mrg.c(273,46)
+
+===========================================================================
+
+Begin optimization report for: mrg_skip..0(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_skip..0(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)) generator/splittable_mrg.c(186,124)
+  CLONED FROM: mrg_skip(mrg_state *, uint_least64_t, uint_least64_t, uint_least64_t)(X,0x00000001,0x00000000,X,0x00000000,0x00000000)
+
+===========================================================================
+
+Begin optimization report for: randpermute_packed_edge(struct packed_edge *, int64_t, mrg_state *__restrict__)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (randpermute_packed_edge(struct packed_edge *, int64_t, mrg_state *__restrict__)) rmat.c(151,1)
+
+===========================================================================
+
+Begin optimization report for: take_pe(volatile struct packed_edge *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (take_pe(volatile struct packed_edge *)) rmat.c(246,1)
+
+===========================================================================
+
+Begin optimization report for: write_edge(packed_edge *, int64_t, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (write_edge(packed_edge *, int64_t, int64_t)) generator/graph_generator.h(64,71)
+
+===========================================================================
+
+Begin optimization report for: release_pe(volatile struct packed_edge *, struct packed_edge)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (release_pe(volatile struct packed_edge *, struct packed_edge)) rmat.c(260,1)
+
+===========================================================================
+
+Begin optimization report for: compute_levels(int64_t *, int64_t, const int64_t *__restrict__, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (compute_levels(int64_t *, int64_t, const int64_t *__restrict__, int64_t)) verify.c(19,1)
+
+===========================================================================
+
+Begin optimization report for: mrg_seed(mrg_state *, const uint_fast32_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_seed(mrg_state *, const uint_fast32_t *)) generator/splittable_mrg.c(279,59)
+
+===========================================================================
+
+Begin optimization report for: make_mrg_seed(uint64_t, uint_fast32_t *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (make_mrg_seed(uint64_t, uint_fast32_t *)) prng.c(18,67)
+
+===========================================================================
+
+Begin optimization report for: mod_mul(uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mul(uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(26,71)
+
+===========================================================================
+
+Begin optimization report for: mod_mac2(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mac2(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(39,125)
+
+===========================================================================
+
+Begin optimization report for: mod_mac3(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mac3(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(48,159)
+
+===========================================================================
+
+Begin optimization report for: mod_mac4(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mac4(uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(59,193)
+
+===========================================================================
+
+Begin optimization report for: mod_mul_x(uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mul_x(uint_fast32_t)) generator/mod_arith_64bit.h(77,56)
+
+===========================================================================
+
+Begin optimization report for: mod_mul..0(uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mul..0(uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(26,71)
+  CLONED FROM: mod_mul(uint_fast32_t, uint_fast32_t)(X,0x06666666,0x00000000)
+
+===========================================================================
+
+Begin optimization report for: mod_mac_y(uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mac_y(uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(85,75)
+
+===========================================================================
+
+Begin optimization report for: mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mod_mac(uint_fast32_t, uint_fast32_t, uint_fast32_t)) generator/mod_arith_64bit.h(32,90)
+
+===========================================================================
+
+Begin optimization report for: write_edge(packed_edge *, int64_t, int64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (write_edge(packed_edge *, int64_t, int64_t)) generator/graph_generator.h(64,71)
+
+===========================================================================
+
+Begin optimization report for: generate_4way_bernoulli(mrg_state *, int, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (generate_4way_bernoulli(mrg_state *, int, int)) generator/graph_generator.c(41,75)
+
+===========================================================================
+
+Begin optimization report for: mrg_get_uint_orig(mrg_state *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (mrg_get_uint_orig(mrg_state *)) generator/splittable_mrg.c(267,51)
+
+===========================================================================
+
+Begin optimization report for: scramble(int64_t, int, uint64_t, uint64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (scramble(int64_t, int, uint64_t, uint64_t)) generator/graph_generator.c(120,83)
+
+===========================================================================
+
+Begin optimization report for: bitreverse(uint64_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bitreverse(uint64_t)) generator/graph_generator.c(73,47)
+
+===========================================================================
+
+Begin optimization report for: make_random_numbers(int64_t, uint64_t, uint64_t, int64_t, double *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (make_random_numbers(int64_t, uint64_t, uint64_t, int64_t, double *)) generator/make_graph.c(102,3)
+
+===========================================================================
+
+Begin optimization report for: xcalloc(size_t, size_t)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (xcalloc(size_t, size_t)) generator/utils.c(40,35)
+
+===========================================================================
+
+Begin optimization report for: abort_handler(int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (abort_handler(int)) [86] xalloc.c(71,1)
+  -> (72,3) exit_handler(void)
+  -> INDIRECT-: (73,26) 
+
+===========================================================================
+
+Begin optimization report for: exit_handler(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (exit_handler(void)) [87] xalloc.c(57,1)
+  -> EXTERN: (61,7) munmap(void *, size_t)
+  -> EXTERN: (63,7) close(int)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at xalloc.c(59,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:munmap(void *, size_t) line 61 and call:close(int) line 63
+   remark #25015: Estimate of max trip count of loop=32
+LOOP END
+===========================================================================
+
+Begin optimization report for: init_random(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (init_random(void)) [88] prng.c(28,1)
+  -> EXTERN: (30,7) getenv(const char *)
+  -> EXTERN: (31,5) __errno_location(void)
+  -> EXTERN: (32,12) strtol(const char *__restrict__, char **__restrict__, int)
+  -> EXTERN: (32,20) getenv(const char *)
+  -> EXTERN: (33,9) __errno_location(void)
+  -> INLINE: (38,3) make_mrg_seed(uint64_t, uint_fast32_t *)
+  -> INLINE: (39,3) mrg_seed(mrg_state *, const uint_fast32_t *)
+
+===========================================================================
+
+Begin optimization report for: bm_init(bitmap_t *, int)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (bm_init(bitmap_t *, int)) omp-csr/bitmap.h(35,1)
+
+===========================================================================
+
+    Report from: Profile guided optimizations [pgo]
+
+
+
+Profile feedback used a statically estimated profile for the following routines:
+
+  File: generator/graph_generator.c
+        make_one_edge(int64_t, int, int, mrg_state *, packed_edge *, uint64_t, uint64_t)(134)
+        generate_kronecker_range(const uint_fast32_t *, int, int64_t, int64_t, packed_edge *)(167)
+
+  File: generator/splittable_mrg.c
+        mrg_apply_transition(const mrg_transition_matrix *__restrict__, const mrg_state *__restrict__, mrg_state *)(116)
+        mrg_orig_step(mrg_state *)(171)
+
+  File: graph500.c
+        main(int, char **)(61)
+        run_bfs(void)(124)
+        dcmp(const void *, const void *)(243)
+        statistics(double *, double *, int64_t)(256)
+        output_results(const int64_t, int64_t, int64_t, const double, const double, const double, const double, const double, const double, const int, const double *, const int64_t *)(324)
+
+  File: omp-csr/omp-csr.c
+        free_graph(void)(72)
+        setup_deg_off(const struct packed_edge *__restrict__, int64_t)(117)
+        i64cmp(const void *, const void *)(179)
+        create_graph_from_edgelist(struct packed_edge *, int64_t)(235)
+        make_bfs_tree(int64_t *, int64_t *, int64_t)(367)
+
+  File: options.c
+        get_options(int, char **)(39)
+
+  File: prng.c
+        init_random(void)(28)
+
+  File: rmat.c
+        permute_vertex_labels(struct packed_edge *__restrict__, int64_t, int64_t, mrg_state *__restrict__, int64_t *__restrict__)(157)
+        permute_edgelist(struct packed_edge *__restrict__, int64_t, mrg_state *)(175)
+        rmat_edgelist(struct packed_edge *, int64_t, int, double, double, double)(184)
+
+  File: verify.c
+        verify_bfs_tree(int64_t *, int64_t, int64_t, const struct packed_edge *, int64_t)(82)
+
+  File: xalloc.c
+        exit_handler(void)(57)
+        abort_handler(int)(71)
+        xmalloc_large(size_t)(83)
+        xmalloc_large_ext(size_t)(138)
+
+
+  0 out of 24 routine(s) used training profile data for PGO feedback
+  0 out of 24 routine(s) were unable to use training profile data for PGO feedback
+  0 out of 24 routine(s) were unable to find training profile data for PGO feedback
+  24 out of 24 routine(s) used a static estimate profile for PGO feedback
+
+
+
