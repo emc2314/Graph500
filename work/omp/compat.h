@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: folding; fill-column: 70; -*- */
-/* Copyright 2010,  Georgia Institute of Technology, USA. */
+/* Copyright 2010-2011,  Georgia Institute of Technology, USA. */
 /* See COPYING for license. */
 #if !defined(COMPAT_HEADER_)
 #define COMPAT_HEADER_
@@ -32,8 +32,15 @@ typedef unsigned uint32_fast_t;
 #include <omp.h>
 #else
 #define OMP(x)
-static int omp_get_thread_num (void) { fprintf(stderr,"Running without omp\n"); return 0; }
+#if defined(__GNUC__)
+static int omp_get_thread_num (void) __attribute__((unused));
+static int omp_get_num_threads (void) __attribute__((unused));
+int omp_get_thread_num (void) { return 0; }
+int omp_get_num_threads (void) { return 1; }
+#else
+static int omp_get_thread_num (void) { return 0; }
 static int omp_get_num_threads (void) { return 1; }
+#endif
 #endif
 
 #if defined(__MTA__)

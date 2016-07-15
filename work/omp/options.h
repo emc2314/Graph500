@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: folding; fill-column: 70; -*- */
-/* Copyright 2010,  Georgia Institute of Technology, USA. */
+/* Copyright 2010-2011,  Georgia Institute of Technology, USA. */
 /* See COPYING for license. */
 #if !defined(OPTIONS_HEADER_)
 #define OPTIONS_HEADER_
@@ -19,7 +19,7 @@ extern double A, B, C, D;
 #define NBFS_max 64
 extern int NBFS;
 
-#define default_SCALE ((int64_t)20)
+#define default_SCALE ((int64_t)14)
 #define default_edgefactor ((int64_t)16)
 
 extern int64_t SCALE;

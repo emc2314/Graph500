@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: folding; fill-column: 70; -*- */
-/* Copyright 2010,  Georgia Institute of Technology, USA. */
+/* Copyright 2010-2011,  Georgia Institute of Technology, USA. */
 /* See COPYING for license. */
 #include "compat.h"
 #include <stdlib.h>
@@ -14,31 +14,48 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
-#if !defined(MAP_HUGETLB)
-#define MAP_HUGETLB 0
+#if defined(HAVE_LIBNUMA)
+#include <numa.h>
+#include <numaif.h>
+#else
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <syscall.h>
+#include <sys/mman.h>
+extern long int syscall(long int __sysno, ...);
+
+static inline int mbind(void *addr, unsigned long len, int mode,
+      unsigned long *nodemask, unsigned long maxnode, unsigned flags) {
+  return syscall(SYS_mbind, addr, len, mode, nodemask, maxnode, flags);
+}
 #endif
+#endif
+
 #if !defined(MAP_POPULATE)
 #define MAP_POPULATE 0
 #endif
 #if !defined(MAP_NOSYNC)
 #define MAP_NOSYNC 0
 #endif
-
-#if 0
-/* Included in the generator. */
-void *
-xmalloc (size_t sz)
-{
-  void *out;
-  if (!(out = malloc (sz))) {
-    perror ("malloc failed");
-    abort ();
-  }
-  return out;
-}
-#else
-extern void *xmalloc (size_t);
+/* Used... for now. */
+#if !defined(MAP_HUGETLB)
+#define MAP_HUGETLB 0
 #endif
+#if !defined(MAP_HUGE_1GB)
+#define MAP_HUGE_1GB 0
+#endif
+
+extern void *xmalloc (size_t);
+
+#if defined(HAVE_LIBNUMA)
+#define MAX_NUMA 64
+static int n_numa_alloc = 0;
+static struct{
+  void *p;
+  size_t sz;
+  int node;
+} numa_allocs[MAX_NUMA];
+#endif
+
 
 #if defined(__MTA__)||defined(USE_MMAP_LARGE)||defined(USE_MMAP_LARGE_EXT)
 #define MAX_LARGE 32
@@ -92,7 +109,7 @@ xmalloc_large (size_t sz)
   large_alloc[which].p = NULL;
   large_alloc[which].fd = -1;
   out = mmap (NULL, sz, PROT_READ|PROT_WRITE,
-	      MAP_PRIVATE|MAP_ANONYMOUS|MAP_HUGETLB|MAP_POPULATE, 0, 0);
+	      MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE|MAP_HUGETLB|MAP_HUGE_1GB, 0, 0);
   if (out == MAP_FAILED || !out) {
     perror ("mmap failed");
     abort ();
@@ -129,7 +146,7 @@ xfree_large (void *p)
   } else
     free (p);
 #else
-  free (p);
+  xfree (p);
 #endif
 }
 
@@ -221,26 +238,96 @@ xmalloc_large_ext (size_t sz)
 #endif
 }
 
-/*
-void
-mark_large_unused (void *p)
-{
-#if !defined(__MTA__)
-  int k;
-  for (k = 0; k < n_large_alloc; ++k)
-    if (p == large_alloc[k].p)
-      posix_madvise (large_alloc[k].p, large_alloc[k].sz, POSIX_MADV_DONTNEED);
+void *
+nmalloc(size_t size, const int onnode){
+  void *p = NULL;
+  if(size == 0)
+    return p;
+#if !defined(HAVE_LIBNUMA)
+  int which = n_numa_alloc++;
+  if (n_numa_alloc > MAX_NUMA) {
+    fprintf (stderr, "Too many NUMA allocations. %d %d\n", n_numa_alloc, MAX_NUMA);
+    --n_numa_alloc;
+    abort ();
+  }
+  numa_allocs[which].p = NULL;
+  numa_allocs[which].sz = 0;
+  numa_allocs[which].node = -1;
+  p = numa_alloc_onnode(size, onnode);
+  if (p == NULL) {
+    perror ("numa alloc failed");
+    abort ();
+  }
+  numa_allocs[which].p = p;
+  numa_allocs[which].sz = size;
+  numa_allocs[which].node = onnode
+  return p;
+#else
+  p = malloc(size);
+#endif
+  return p;
+}
+
+void *
+nmalloc_large(size_t size, const int onnode){
+  void* p = NULL;
+  if(size == 0)
+    return p;
+#if defined(__MTA__)||defined(USE_MMAP_LARGE)
+#if !defined(HAVE_LIBNUMA)
+  enum MBIND_FLAGS {
+    MPOL_MF_STRICT   = (1<<0),  /* Verify existing pages in the mapping */
+    MPOL_MF_MOVE     = (1<<1),  /* Move pages owned by this process to conform to mapping */
+    MPOL_MF_MOVE_ALL = (1<<2)   /* Move every page to conform to mapping */
+  };
+  enum MBIND_MODE {
+    MPOL_DEFAULT     = (0),
+    MPOL_PREFERRED   = (1),
+    MPOL_BIND        = (2),
+    MPOL_INTERLEAVE  = (3)
+  };
+#endif
+  p = xmalloc_large(size);
+  const unsigned long mask = 1UL << onnode;
+  if(mbind(p, size, MPOL_BIND, &mask, 2, MPOL_MF_MOVE|MPOL_MF_STRICT) == -1){
+    int err = errno;
+    fprintf(stderr, "failed to bind mem, errno is %d\n", err);
+  }
+#else
+  p = nmalloc(size, onnode);
+#endif
+  return p;
+}
+
+void nfree(void *p){
+#if !defined(HAVE_LIBNUMA)
+  int k, found = 0;
+  for (k = 0; k < n_numa_alloc; ++k) {
+    if (p == numa_allocs[k].p) {
+      numa_free(p, numa_allocs[k].sz);
+      numa_allocs[k].p = NULL;
+      numa_allocs[k].sz = 0
+      numa_allocs[k].node = -1;
+      }
+      found = 1;
+      break;
+    }
+  }
+  if (found) {
+    --n_numa_alloc;
+    for (; k < n_numa_alloc; ++k)
+      numa_allocs[k] = numa_allocs[k+1];
+  } else
+    free (p);
+#else
+  free(p);
 #endif
 }
 
-void
-mark_large_willuse (void *p)
-{
-#if !defined(__MTA__)
-  int k;
-  for (k = 0; k < n_large_alloc; ++k)
-    if (p == large_alloc[k].p)
-      posix_madvise (large_alloc[k].p, large_alloc[k].sz, POSIX_MADV_WILLNEED);
+void nfree_large(void *p){
+#if defined(__MTA__)||defined(USE_MMAP_LARGE)
+  xfree_large(p);
+#else
+  nfree(p);
 #endif
 }
-*/

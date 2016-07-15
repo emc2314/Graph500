@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: folding; fill-column: 70; -*- */
-/* Copyright 2010,  Georgia Institute of Technology, USA. */
+/* Copyright 2010-2011,  Georgia Institute of Technology, USA. */
 /* See COPYING for license. */
 #include "compat.h"
 #include <stdio.h>
@@ -81,7 +81,7 @@ main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  write (fd, IJ, 2 * nedge * sizeof (*IJ));
+  write (fd, IJ, nedge * sizeof (*IJ));
 
   close (fd);
 

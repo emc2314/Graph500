@@ -1,0 +1,54 @@
+ULIBCHOME := .
+
+## ULIBC name
+LIBNAME  := libulibc.a
+ULIBC    := -lulibc
+
+## CC flags
+CPPFLAGS  = $(addprefix -I, $(ULIBCHOME))
+LDFLAGS   = $(addprefix -L, $(ULIBCHOME))
+LDLIBS   := -lulibc -lm
+CC       := icc
+CFLAGS   := -O3
+
+ifeq ($(OS), solaris)
+CFLAGS   += -O3 -m64 -xopenmp -xc99 -D_XOPEN_SOURCE=600
+# LDLIBS   += -llgrp -lkstat -lpicl -xopenmp
+LDLIBS   += -xopenmp
+LDFLAGS  += $(addprefix -R, . $(LIBDIRS) -O3 -m64
+else ifeq ($(OS), aix)
+CFLAGS   += -qsmp=omp
+LDLIBS   += -qsmp=omp
+else ifeq ($(OS), osx)
+CFLAGS   += -O2 -fopenmp -Wall -Wextra -std=c99 -D_GNU_SOURCE
+LDLIBS   += -fopenmp
+else
+CFLAGS   += -O2 -fopenmp -Wall -Wextra -std=c99 -D_GNU_SOURCE
+LDLIBS   += -fopenmp
+endif
+
+CP       := cp -rf
+RM       := rm -rf
+AR       := ar -rcus
+RANLIB   := ranlib
+
+### for memory allocator
+###     ULIBC_USE_MMAP_MEMORY enabled => mmap
+###     ULIBC_USE_MMAP_MEMORY disable and USE_MALLOC enabled => malloc
+###     ULIBC_USE_MMAP_MEMORY disable and USE_MALLOC disable => posix_memalign
+#CFLAGS += -DULIBC_USE_MMAP_MEMORY
+ #CFLAGS += -DUSE_MALLOC
+
+### for NUMA barrier
+# USE_PTHREAD_BARRIER=yes
+USE_PTHREAD_BARRIER=no
+
+
+### (future work)
+# CFLAGS += -DUSE_PTHREAD
+
+### Local variables:
+### mode: makefile-bsdmake
+### coding: utf-8-unix
+### indent-tabs-mode: nil
+### End:

@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: folding; fill-column: 70; -*- */
-/* Copyright 2010,  Georgia Institute of Technology, USA. */
+/* Copyright 2010-2011,  Georgia Institute of Technology, USA. */
 /* See COPYING for license. */
 #include "compat.h"
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include "xalloc.h"
+#include "verify.h"
 
 static int
 compute_levels (int64_t * level,
@@ -78,12 +79,13 @@ compute_levels (int64_t * level,
 int64_t
 verify_bfs_tree (int64_t *bfs_tree_in, int64_t max_bfsvtx,
 		 int64_t root,
-		 const int64_t *IJ_in, int64_t nedge)
+		 const struct packed_edge *IJ_in, int64_t nedge)
 {
   int64_t * restrict bfs_tree = bfs_tree_in;
-  const int64_t * restrict IJ = IJ_in;
+  const struct packed_edge * restrict IJ = IJ_in;
 
-  int err, nedge_traversed;
+  int err;
+  int64_t nedge_traversed;
   int64_t * restrict seen_edge, * restrict level;
 
   const int64_t nv = max_bfsvtx+1;
@@ -114,9 +116,9 @@ verify_bfs_tree (int64_t *bfs_tree_in, int64_t max_bfsvtx,
 
     OMP("omp for reduction(+:nedge_traversed)")
     MTA("mta assert parallel") MTA("mta use 100 streams")
-      for (k = 0; k < 2*nedge; k+=2) {
-	const int64_t i = IJ[k];
-	const int64_t j = IJ[k+1];
+      for (k = 0; k < nedge; ++k) {
+	const int64_t i = get_v0_from_edge (&IJ[k]);
+	const int64_t j = get_v1_from_edge (&IJ[k]);
 	int64_t lvldiff;
 	terr = err;
 

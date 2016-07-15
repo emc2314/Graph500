@@ -8,6 +8,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <mpi.h>
+
 #include <assert.h>
 
 #include <alloca.h> /* Portable enough... */
@@ -32,6 +34,7 @@
 #include "generator/make_graph.h"
 
 static int64_t nvtx_scale;
+static int rank;
 
 static int64_t bfs_root[NBFS_max];
 
@@ -45,33 +48,32 @@ static int64_t nedge;
 
 static void run_bfs (void);
 static void output_results (const int64_t SCALE, int64_t nvtx_scale,
-			    int64_t edgefactor,
-			    const double A, const double B,
-			    const double C, const double D,
-			    const double generation_time,
-			    const double construction_time,
-			    const int NBFS,
-			    const double *bfs_time, const int64_t *bfs_nedge);
-
-int ALPHA;
-int BETA;
+          int64_t edgefactor,
+          const double A, const double B,
+          const double C, const double D,
+          const double generation_time,
+          const double construction_time,
+          const int NBFS,
+          const double *bfs_time, const int64_t *bfs_nedge);
 
 int
 main (int argc, char **argv)
 {
+  int provided;
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_SERIALIZED, &provided);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  assert(provided > 0); //Use MPI with threads
   int64_t desired_nedge;
   if (sizeof (int64_t) < 8) {
     fprintf (stderr, "No 64-bit support.\n");
     return EXIT_FAILURE;
   }
 
-  if (argc != 4)
-    fprintf(stderr, "Usage: omp-csr SCALE ALPHA BETA");
+  if (argc > 1)
     get_options (argc, argv);
-  SCALE=(int64_t) atoi(argv[1]);
-  ALPHA=atoi(argv[2]);
-  BETA=atoi(argv[3]);
+
   nvtx_scale = ((int64_t)1)<<SCALE;
+
   init_random ();
 
   desired_nedge = nvtx_scale * edgefactor;
@@ -85,7 +87,7 @@ main (int argc, char **argv)
     to wherever the edge list is mapped into the simulator's memory.
   */
   if (!dumpname) {
-    if (VERBOSE) fprintf (stderr, "Generating edge list...");
+    if (VERBOSE && (rank ==0)) fprintf (stderr, "Generating edge list...");
     if (use_RMAT) {
       nedge = desired_nedge;
       IJ = xmalloc_large_ext (nedge * sizeof (*IJ));
@@ -93,7 +95,7 @@ main (int argc, char **argv)
     } else {
       TIME(generation_time, make_graph (SCALE, desired_nedge, userseed, userseed, &nedge, (packed_edge**)(&IJ)));
     }
-    if (VERBOSE) fprintf (stderr, " done.\n");
+    if (VERBOSE && (rank ==0)) fprintf (stderr, " done.\n");
   } else {
     int fd;
     ssize_t sz;
@@ -113,9 +115,11 @@ main (int argc, char **argv)
 
   xfree_large (IJ);
 
-  output_results (SCALE, nvtx_scale, edgefactor, A, B, C, D,
-		  generation_time, construction_time, NBFS, bfs_time, bfs_nedge);
+  if(rank == 0)
+    output_results (SCALE, nvtx_scale, edgefactor, A, B, C, D,
+        generation_time, construction_time, NBFS, bfs_time, bfs_nedge);
 
+  MPI_Finalize();
   return EXIT_SUCCESS;
 }
 
@@ -126,9 +130,9 @@ run_bfs (void)
   int m, err;
   int64_t k, t;
 
-  if (VERBOSE) fprintf (stderr, "Creating graph...");
+  if (VERBOSE && (rank ==0)) fprintf (stderr, "Creating graph...");
   TIME(construction_time, err = create_graph_from_edgelist (IJ, nedge));
-  if (VERBOSE) fprintf (stderr, "done.\n");
+  if (VERBOSE && (rank ==0)) fprintf (stderr, "done.\n");
   if (err) {
     fprintf (stderr, "Failure creating graph.\n");
     exit (EXIT_FAILURE);
@@ -143,15 +147,15 @@ run_bfs (void)
     has_adj = xmalloc_large (nvtx_scale * sizeof (*has_adj));
     OMP("omp parallel") {
       OMP("omp for")
-	for (k = 0; k < nvtx_scale; ++k)
-	  has_adj[k] = 0;
+  for (k = 0; k < nvtx_scale; ++k)
+    has_adj[k] = 0;
       MTA("mta assert nodep") OMP("omp for")
-	for (k = 0; k < nedge; ++k) {
-	  const int64_t i = get_v0_from_edge(&IJ[k]);
-	  const int64_t j = get_v1_from_edge(&IJ[k]);
-	  if (i != j)
-	    has_adj[i] = has_adj[j] = 1;
-	}
+  for (k = 0; k < nedge; ++k) {
+    const int64_t i = get_v0_from_edge(&IJ[k]);
+    const int64_t j = get_v1_from_edge(&IJ[k]);
+    if (i != j)
+      has_adj[i] = has_adj[j] = 1;
+  }
     }
 
     /* Sample from {0, ..., nvtx_scale-1} without replacement. */
@@ -164,12 +168,12 @@ run_bfs (void)
     }
     if (t >= nvtx_scale && m < NBFS) {
       if (m > 0) {
-	fprintf (stderr, "Cannot find %d sample roots of non-self degree > 0, using %d.\n",
-		 NBFS, m);
-	NBFS = m;
+  fprintf (stderr, "Cannot find %d sample roots of non-self degree > 0, using %d.\n",
+     NBFS, m);
+  NBFS = m;
       } else {
-	fprintf (stderr, "Cannot find any sample roots of non-self degree > 0.\n");
-	exit (EXIT_FAILURE);
+  fprintf (stderr, "Cannot find any sample roots of non-self degree > 0.\n");
+  exit (EXIT_FAILURE);
       }
     }
 
@@ -189,28 +193,33 @@ run_bfs (void)
     close (fd);
   }
 
+  //sleep(2);
+
   for (m = 0; m < NBFS; ++m) {
     int64_t *bfs_tree, max_bfsvtx;
 
     /* Re-allocate. Some systems may randomize the addres... */
-    bfs_tree = xmalloc_large (nvtx_scale * sizeof (*bfs_tree));
+    bfs_tree = xmalloc_large ((nvtx_scale+64*8*2) * sizeof (*bfs_tree));
+    memset(bfs_tree, -1, (nvtx_scale+64*8*2) * sizeof (*bfs_tree));
     assert (bfs_root[m] < nvtx_scale);
 
-    if (VERBOSE) fprintf (stderr, "Running bfs %d...", m);
+    if (VERBOSE && (rank ==0)) fprintf (stderr, "Running bfs %d...", m);
+    MPI_Barrier(MPI_COMM_WORLD);
     TIME(bfs_time[m], err = make_bfs_tree (bfs_tree, &max_bfsvtx, bfs_root[m]));
-    if (VERBOSE) fprintf (stderr, "done\n");
+    if (VERBOSE && (rank ==0)) fprintf (stderr, "done\n");
 
     if (err) {
       perror ("make_bfs_tree failed");
       abort ();
     }
 
-    if (VERBOSE) fprintf (stderr, "Verifying bfs %d...", m);
-    bfs_nedge[m] = verify_bfs_tree (bfs_tree, max_bfsvtx, bfs_root[m], IJ, nedge);
-    if (VERBOSE) fprintf (stderr, "done\n");
+    if (VERBOSE && (rank ==0)) fprintf (stderr, "Verifying bfs %d...", m);
+    if (rank==0)
+      bfs_nedge[m] = verify_bfs_tree (bfs_tree, max_bfsvtx, bfs_root[m], IJ, nedge);
+    if (VERBOSE && (rank ==0)) fprintf (stderr, "done\n");
     if (bfs_nedge[m] < 0) {
       fprintf (stderr, "bfs %d from %" PRId64 " failed verification (%" PRId64 ")\n",
-	       m, bfs_root[m], bfs_nedge[m]);
+         m, bfs_root[m], bfs_nedge[m]);
       abort ();
     }
 
@@ -221,20 +230,20 @@ run_bfs (void)
 }
 
 #define NSTAT 9
-#define PRINT_STATS(lbl, israte)					\
-  do {									\
-    printf ("min_%s: %20.17e\n", lbl, stats[0]);			\
-    printf ("firstquartile_%s: %20.17e\n", lbl, stats[1]);		\
-    printf ("median_%s: %20.17e\n", lbl, stats[2]);			\
-    printf ("thirdquartile_%s: %20.17e\n", lbl, stats[3]);		\
-    printf ("max_%s: %20.17e\n", lbl, stats[4]);			\
-    if (!israte) {							\
-      printf ("mean_%s: %20.17e\n", lbl, stats[5]);			\
-      printf ("stddev_%s: %20.17e\n", lbl, stats[6]);			\
-    } else {								\
-      printf ("harmonic_mean_%s: %20.17e\n", lbl, stats[7]);		\
-      printf ("harmonic_stddev_%s: %20.17e\n", lbl, stats[8]);	\
-    }									\
+#define PRINT_STATS(lbl, israte)          \
+  do {                  \
+    printf ("min_%s: %20.17e\n", lbl, stats[0]);      \
+    printf ("firstquartile_%s: %20.17e\n", lbl, stats[1]);    \
+    printf ("median_%s: %20.17e\n", lbl, stats[2]);      \
+    printf ("thirdquartile_%s: %20.17e\n", lbl, stats[3]);    \
+    printf ("max_%s: %20.17e\n", lbl, stats[4]);      \
+    if (!israte) {              \
+      printf ("mean_%s: %20.17e\n", lbl, stats[5]);      \
+      printf ("stddev_%s: %20.17e\n", lbl, stats[6]);      \
+    } else {                \
+      printf ("harmonic_mean_%s: %20.17e\n", lbl, stats[7]);    \
+      printf ("harmonic_stddev_%s: %20.17e\n", lbl, stats[8]);  \
+    }                  \
   } while (0)
 
 
@@ -317,10 +326,10 @@ statistics (double *out, double *data, int64_t n)
 
 void
 output_results (const int64_t SCALE, int64_t nvtx_scale, int64_t edgefactor,
-		const double A, const double B, const double C, const double D,
-		const double generation_time,
-		const double construction_time,
-		const int NBFS, const double *bfs_time, const int64_t *bfs_nedge)
+    const double A, const double B, const double C, const double D,
+    const double generation_time,
+    const double construction_time,
+    const int NBFS, const double *bfs_time, const int64_t *bfs_nedge)
 {
   int k;
   int64_t sz;
@@ -336,8 +345,8 @@ output_results (const int64_t SCALE, int64_t nvtx_scale, int64_t edgefactor,
 
   sz = (1L << SCALE) * edgefactor * 2 * sizeof (int64_t);
   printf ("SCALE: %" PRId64 "\nnvtx: %" PRId64 "\nedgefactor: %" PRId64 "\n"
-	  "terasize: %20.17e\n",
-	  SCALE, nvtx_scale, edgefactor, sz/1.0e12);
+    "terasize: %20.17e\n",
+    SCALE, nvtx_scale, edgefactor, sz/1.0e12);
   printf ("A: %20.17e\nB: %20.17e\nC: %20.17e\nD: %20.17e\n", A, B, C, D);
   printf ("generation_time: %20.17e\n", generation_time);
   printf ("construction_time: %20.17e\n", construction_time);

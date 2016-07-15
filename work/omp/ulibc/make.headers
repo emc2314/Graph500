@@ -1,0 +1,10 @@
+init.o: init.c
+numa_barrier.o: numa_barrier.c
+numa_barrier_opt.o: numa_barrier_opt.c
+numa_loops.o: numa_loops.c
+numa_malloc.o: numa_malloc.c
+numa_mapping.o: numa_mapping.c
+numa_threads.o: numa_threads.c
+online_topology.o: online_topology.c
+tools.o: tools.c
+topology.o: topology.c

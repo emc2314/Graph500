@@ -9,31 +9,38 @@ GRAPH500_SOURCES=graph500.c options.c rmat.c kronecker.c verify.c prng.c \
 MAKE_EDGELIST_SOURCES=make-edgelist.c options.c rmat.c kronecker.c prng.c \
 	xalloc.c timer.c 
 
+BIN=make-edgelist
 
+ifeq ($(BUILD_OPENMP), Yes)
+BIN += omp-csr/omp-csr omp-csr/omp-csr-numa
+endif
 
 GENERATOR_SRCS=splittable_mrg.c	\
 	graph_generator.c \
 	make_graph.c utils.c
 
+.PHONY: all
+all: $(BIN)
+
 CPPFLAGS += -I./generator
 
-all: omp-csr/omp-csr omp-csr/omp-csrtd omp-csr/omp-csrbu
+make-edgelist: CFLAGS:=$(CFLAGS) $(CFLAGS_OPENMP)
+make-edgelist:	make-edgelist.c options.c rmat.c kronecker.c prng.c \
+	xalloc.c timer.c $(addprefix generator/,$(GENERATOR_SRCS))
+
+omp-csr/omp-csr-numa: CFLAGS:=$(CFLAGS) $(CFLAGS_OPENMP)
+omp-csr/omp-csr-numa: omp-csr/omp-csr-numa.c $(GRAPH500_SOURCES) \
+	$(addprefix generator/,$(GENERATOR_SRCS))
 
 omp-csr/omp-csr: CFLAGS:=$(CFLAGS) $(CFLAGS_OPENMP)
 omp-csr/omp-csr: omp-csr/omp-csr.c $(GRAPH500_SOURCES) \
 	$(addprefix generator/,$(GENERATOR_SRCS))
 
-omp-csr/omp-csrtd: CFLAGS:=$(CFLAGS) $(CFLAGS_OPENMP)
-omp-csr/omp-csrtd: omp-csr/omp-csrtd.c $(GRAPH500_SOURCES) \
-	$(addprefix generator/,$(GENERATOR_SRCS))
+generator/generator_test_seq: generator/generator_test_seq.c $(GENERATOR_SRCS)
 
-omp-csr/omp-csrbu: CFLAGS:=$(CFLAGS) $(CFLAGS_OPENMP)
-omp-csr/omp-csrbu: omp-csr/omp-csrbu.c $(GRAPH500_SOURCES) \
-	$(addprefix generator/,$(GENERATOR_SRCS))
-run:
-	omp-csr/omp-csr
+generator/generator_test_omp: generator/generator_test_omp.c $(GENERATOR_SRCS)
 
 .PHONY:	clean
-clean: 
-	rm -f omp-csr/omp-csr
-
+clean:
+	rm -f generator/generator_test_seq generator/generator_test_omp \
+		$(BIN)
